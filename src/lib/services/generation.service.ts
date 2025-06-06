@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Generation, SuggestionDto } from '../../types';
 import crypto from 'crypto';
+import { llmService } from './llm.service';
 
 export class GenerationService {
   constructor(private supabase: SupabaseClient) {}
@@ -41,6 +42,70 @@ export class GenerationService {
     return data;
   }
 
+  async generateFlashcardSuggestions(params: {
+    userId: string;
+    sourceText: string;
+  }): Promise<{
+    generation: Generation;
+    suggestions: SuggestionDto[];
+  }> {
+    const { userId, sourceText } = params;
+    console.log(`GenerationService: Rozpoczynam generowanie fiszek dla użytkownika ${userId}`);
+    console.log(`GenerationService: Długość tekstu źródłowego: ${sourceText.length} znaków`);
+    
+    const startTime = Date.now();
+    
+    // Generowanie fiszek za pomocą LLMService
+    console.log('GenerationService: Wywołuję LLMService.generateFlashcardSuggestions()');
+    const result = await llmService.generateFlashcardSuggestions(sourceText);
+    const generationDurationMs = Date.now() - startTime;
+    console.log(`GenerationService: Generowanie zakończone po ${generationDurationMs}ms`);
+    
+    // Tworzenie rekordu generacji w bazie danych
+    if (result.error) {
+      // Logowanie błędu, jeśli wystąpił
+      console.error('GenerationService: Błąd podczas generowania fiszek:', result.error);
+      const sourceTextHash = crypto
+        .createHash('sha256')
+        .update(sourceText)
+        .digest('hex');
+        
+      await this.logGenerationError({
+        userId,
+        sourceTextHash,
+        sourceTextLength: sourceText.length,
+        model: 'openai/gpt-3.5-turbo', // Zaktualizowana nazwa modelu
+        errorCode: result.error.code,
+        errorMessage: result.error.message
+      });
+      
+      // Zwracamy puste wyniki w przypadku błędu
+      throw new Error(`Failed to generate flashcards: ${result.error.message}`);
+    }
+    
+    // Zapisujemy wygenerowane fiszki
+    console.log(`GenerationService: Zapisuję ${result.suggestions.length} wygenerowanych fiszek do bazy danych`);
+    
+    // Sprawdź czy mamy jakieś sugestie przed utworzeniem rekordu
+    if (!Array.isArray(result.suggestions) || result.suggestions.length === 0) {
+      throw new Error('No valid flashcard suggestions to save');
+    }
+    
+    const generation = await this.createGeneration({
+      userId,
+      sourceText,
+      suggestions: result.suggestions,
+      model: 'openai/gpt-3.5-turbo', // Zaktualizowana nazwa modelu
+      generationDurationMs
+    });
+    console.log(`GenerationService: Zapisano generację z ID: ${generation.id}`);
+    
+    return {
+      generation,
+      suggestions: result.suggestions
+    };
+  }
+
   async logGenerationError(params: {
     userId: string;
     sourceTextHash: string;
@@ -49,12 +114,24 @@ export class GenerationService {
     errorCode: string;
     errorMessage: string;
   }): Promise<void> {
-    const { error } = await this.supabase
-      .from('generation_error_logs')
-      .insert(params);
+    try {
+      // Upewnij się, że nazwy kolumn są zgodne ze schematem bazy danych
+      const { error } = await this.supabase
+        .from('generation_error_logs')
+        .insert({
+          user_id: params.userId,
+          source_text_hash: params.sourceTextHash,
+          source_text_length: params.sourceTextLength,
+          model: params.model,
+          error_code: params.errorCode,       // Zmieniono z errorCode na error_code
+          error_message: params.errorMessage  // Zmieniono z errorMessage na error_message
+        });
 
-    if (error) {
-      console.error('Failed to log generation error:', error);
+      if (error) {
+        console.error('Failed to log generation error:', error);
+      }
+    } catch (error) {
+      console.error('Exception during logging generation error:', error);
     }
   }
 } 

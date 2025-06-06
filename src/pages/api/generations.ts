@@ -1,7 +1,5 @@
 import type { APIRoute } from 'astro';
 import { z } from 'zod';
-import crypto from 'crypto';
-import { llmService } from '../../lib/services/llm.service';
 import { GenerationService } from '../../lib/services/generation.service';
 import { rateLimitService } from '../../lib/services/rate-limit.service';
 import { ErrorLogService, formatError } from '../../lib/services/error-log.service';
@@ -22,16 +20,22 @@ const generateFlashcardsSchema = z.object({
 
 export const POST: APIRoute = async ({ request }) => {
   try {
+    console.log('API /generations: Otrzymano nowe żądanie generacji fiszek');
+    
     // W trybie deweloperskim używamy test usera
     const userId = TEST_USER_ID;
     const supabase = supabaseClient;
     const errorLogService = new ErrorLogService(supabase);
+    const generationService = new GenerationService(supabase);
 
-    // 2. Parse and validate input
+    // Parse and validate input
     const body = await request.json() as GenerateFlashcardsCommand;
+    console.log(`API /generations: Otrzymano tekst o długości ${body.source_text.length} znaków`);
+    
     const validationResult = generateFlashcardsSchema.safeParse(body);
     
     if (!validationResult.success) {
+      console.error('API /generations: Błąd walidacji:', validationResult.error.errors);
       return new Response(
         JSON.stringify({
           error: 'Validation Error',
@@ -42,62 +46,58 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    // 3. Generate suggestions using LLM
-    const startTime = Date.now();
-    const llmResponse = await llmService.generateFlashcardSuggestions(body.source_text);
-    const generationDuration = Date.now() - startTime;
+    try {
+      console.log('API /generations: Rozpoczynam generowanie fiszek');
+      // Generate flashcard suggestions using the integrated GenerationService
+      const result = await generationService.generateFlashcardSuggestions({
+        userId,
+        sourceText: body.source_text
+      });
 
-    if (llmResponse.error) {
+      console.log(`API /generations: Generowanie zakończone sukcesem. Wygenerowano ${result.suggestions.length} fiszek`);
+
+      // Return response
+      const response: GenerationCreateResponseDto = {
+        generation: {
+          id: result.generation.id,
+          model: result.generation.model,
+          generated_count: result.generation.generated_count,
+          accepted_unedited_count: result.generation.accepted_unedited_count,
+          accepted_edited_count: result.generation.accepted_edited_count,
+          source_text_hash: result.generation.source_text_hash,
+          source_text_length: result.generation.source_text_length,
+          generation_duration: result.generation.generation_duration,
+          created_at: result.generation.created_at,
+          updated_at: result.generation.updated_at
+        },
+        suggestions: result.suggestions
+      };
+
+      return new Response(JSON.stringify(response), {
+        status: 201,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    } catch (error) {
+      // Obsługa błędów związanych z generacją
+      console.error('API /generations: Błąd podczas generowania fiszek:', error);
       return new Response(
         JSON.stringify({
-          error: 'LLM Error',
-          message: 'Failed to generate flashcard suggestions',
-          details: llmResponse.error
+          error: 'Generation Error',
+          message: error instanceof Error ? error.message : 'Failed to generate flashcard suggestions',
+          details: error instanceof Error ? { name: error.name, stack: error.stack } : null
         }),
         { status: 503 }
       );
     }
-
-    // 4. Create generation record
-    const generationService = new GenerationService(supabase);
-    const generation = await generationService.createGeneration({
-      userId,
-      sourceText: body.source_text,
-      suggestions: llmResponse.suggestions,
-      model: 'openai/gpt-4',
-      generationDurationMs: generationDuration
-    });
-
-    // 5. Return response
-    const response: GenerationCreateResponseDto = {
-      generation: {
-        id: generation.id,
-        model: generation.model,
-        generated_count: generation.generated_count,
-        accepted_unedited_count: generation.accepted_unedited_count,
-        accepted_edited_count: generation.accepted_edited_count,
-        source_text_hash: generation.source_text_hash,
-        source_text_length: generation.source_text_length,
-        generation_duration: generation.generation_duration,
-        created_at: generation.created_at,
-        updated_at: generation.updated_at
-      },
-      suggestions: llmResponse.suggestions
-    };
-
-    return new Response(JSON.stringify(response), {
-      status: 201,
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
   } catch (error) {
-    console.error('Unexpected error:', error);
+    console.error('API /generations: Nieoczekiwany błąd:', error);
     return new Response(
       JSON.stringify({
         error: 'Internal Server Error',
         message: 'An unexpected error occurred',
-        details: error instanceof Error ? error.message : String(error)
+        details: error instanceof Error ? { name: error.name, message: error.message, stack: error.stack } : String(error)
       }),
       { status: 500 }
     );
