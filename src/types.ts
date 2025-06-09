@@ -11,6 +11,40 @@ export type Generation = Database['public']['Tables']['generations']['Row'];
 export type GenerationErrorLog = Database['public']['Tables']['generation_error_logs']['Row'];
 
 // ------------------------------------------------------------------------------------
+// Auth DTOs
+// ------------------------------------------------------------------------------------
+export interface LoginDTO {
+  email: string;
+  password: string;
+}
+
+export interface RegisterDTO {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface ResetPasswordDTO {
+  email: string;
+}
+
+export interface NewPasswordDTO {
+  password: string;
+  confirmPassword: string;
+  token: string;
+}
+
+export interface DeleteAccountDTO {
+  password: string;
+}
+
+export interface AuthResponseDTO {
+  success: boolean;
+  message?: string;
+  redirectTo?: string;
+}
+
+// ------------------------------------------------------------------------------------
 // 1. Flashcard DTO
 //    Represents a flashcard as returned by the API endpoints
 // ------------------------------------------------------------------------------------

@@ -1,16 +1,20 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { FlashcardsView } from "../components/flashcards";
+import { Toaster } from "../components/ui/sonner";
+
+// Mark this page as requiring server-side rendering for authentication
+export const prerender = false;
 
 // Ensure page is protected for authenticated users only
-// This will need to be updated once authentication is implemented
-// const user = Astro.locals.user;
-// if (!user) {
-//   return Astro.redirect("/login");
+// This will be uncommented once authentication is implemented
+// if (!Astro.locals.user) {
+//   return Astro.redirect("/auth/login");
 // }
 ---
 
 <Layout title="10x-cards - Moje fiszki">
   <h1 class="text-3xl font-bold mb-8 text-center">Moje fiszki</h1>
   <FlashcardsView client:load />
+  <Toaster client:load />
 </Layout> 

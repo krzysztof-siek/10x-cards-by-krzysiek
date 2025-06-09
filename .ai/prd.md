@@ -106,14 +106,6 @@ Kryteria akceptacji:
 - Naciśnięcie przycisku otwiera formularz z polami "Przód" i "Tył".
 - Po zapisaniu nowa fiszka pojawia się na liście.
 
-ID: US-008
-Tytuł: Sesja nauki z algorytmem powtórek
-Opis: Jako zalogowany użytkownik chcę, aby dodane fiszki były dostępne w widoku "Sesja nauki" opartym na zewnętrznym algorytmie, aby móc efektywnie się uczyć (spaced repetition).
-Kryteria akceptacji:
-- W widoku "Sesja nauki" algorytm przygotowuje dla mnie sesję nauki fiszek
-- Na start wyświetlany jest przód fiszki, poprzez interakcję użytkownik wyświetla jej tył
-- Użytkownik ocenia zgodnie z oczekiwaniami algorytmu na ile przyswoił fiszkę
-- Następnie algorytm pokazuje kolejną fiszkę w ramach sesji nauki
 
 ID: US-009
 Tytuł: Bezpieczny dostęp i autoryzacja
@@ -121,6 +113,13 @@ Opis: Jako zalogowany użytkownik chcę mieć pewność, że moje fiszki nie są
 Kryteria akceptacji:
 - Tylko zalogowany użytkownik może wyświetlać, edytować i usuwać swoje fiszki.
 - Nie ma dostępu do fiszek innych użytkowników ani możliwości współdzielenia.
+- Użytkownik nie moze korzystać z listy widoku fiszek ani generowania bez logowania sie do systemu
+- Użytkownik moze logować się do systemu poprzez przycisk w prawym górnym rogu
+- Użytkownik moze wylogować się z systemu poprzez przycisk w prawym górnym rogu
+- Rejestracja i logowanie odbywa się na dedykowanych stronach
+- Logowanie wymaga podania adresu email i hasła.
+- Rejestracja wymaga podania adresu email, hasła i potwierdzenia hasła.
+- Odzyskiwanie hasła powinno być mozliwe
 
 ## 6. Metryki sukcesu
 1. Efektywność generowania fiszek:

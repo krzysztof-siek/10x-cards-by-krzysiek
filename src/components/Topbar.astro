@@ -1,5 +1,12 @@
 ---
 import { Topbar as TopbarComponent } from './ui/topbar';
+import { Toaster } from "@/components/ui/sonner";
+
+// Pobieramy użytkownika z kontekstu Astro
+const user = Astro.locals.user && Astro.locals.user.email ? {
+  email: Astro.locals.user.email
+} : null;
 ---
 
-<TopbarComponent client:load /> 
+<TopbarComponent client:load user={user} />
+<Toaster client:load /> 

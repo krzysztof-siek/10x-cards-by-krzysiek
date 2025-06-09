@@ -3,8 +3,14 @@ import Layout from '../layouts/Layout.astro';
 import { GenerateFlashcardsView } from '../components/generate/GenerateFlashcardsView';
 import { Toaster } from '../components/ui/sonner';
 
-// Mark this page as requiring authentication (to be handled by middleware)
+// Mark this page as requiring server-side rendering for authentication
 export const prerender = false;
+
+// Ensure page is protected for authenticated users only
+// This will be uncommented once authentication is implemented
+// if (!Astro.locals.user) {
+//   return Astro.redirect("/auth/login");
+// }
 ---
 
 <Layout title="Generate Flashcards - 10x Cards">
