@@ -19,15 +19,37 @@ CI/CD i Hosting:
 - Github Actions do tworzenia pipeline'ów CI/CD
 - DigitalOcean do hostowania aplikacji za pośrednictwem obrazu docker
 
-Testing - Kompleksowe rozwiązania do testowania:
-- Unit Testing:
+Testing - Kompleksowa strategia testowania:
+
+- Testy jednostkowe (Unit Tests):
   - Vitest jako główny framework testowy (zoptymalizowany dla Vite/Astro)
   - React Testing Library do testowania komponentów React
-  - @testing-library/jest-dom dla dodatkowych matcherów DOM
-  - happy-dom jako lekkie środowisko DOM dla testów
-  - @astrojs/vitest dla integracji z Astro
+  - Skupienie na testowaniu izolowanych funkcji, hooków i serwisów
+  - Pokrycie kodu testami na poziomie min. 90% dla kluczowej logiki biznesowej
+  - Automatyczne uruchamianie testów w pipeline CI
 
-- E2E Testing:
+- Testy komponentowe (Component Tests):
+  - Vitest + React Testing Library
+  - Testowanie renderowania, stanu i interakcji użytkownika
+  - Izolowane testy dla pojedynczych komponentów (np. `LoginForm`, `FlashcardsTable`)
+  - Mocki zewnętrznych zależności dla testów deterministycznych
+
+- Testy integracyjne (Integration Tests):
+  - Vitest do testowania endpointów API i ich interakcji z serwisami
+  - Dedykowana testowa instancja bazy danych Supabase
+  - Testowanie integracji z mockami API LLM
+  - Weryfikacja przepływu danych między frontend-backend
+
+- Testy End-to-End (E2E):
   - Playwright jako główne narzędzie do testów end-to-end
+  - Symulacja rzeczywistych scenariuszy użycia z perspektywy użytkownika
+  - Testowanie pełnych przepływów użytkownika (np. rejestracja -> generowanie fiszek)
+  - Automatyzacja testów E2E w CI/CD przed każdym wdrożeniem
   - @axe-core/playwright do testów dostępności
   - @playwright/test jako natywny test runner
+
+- Środowisko testowe:
+  - Dedykowana, odizolowana instancja bazy danych Supabase
+  - Automatyczne uruchamianie testów w GitHub Actions
+  - Smoke testy po wdrożeniu na produkcję
+  - Testy regresji uruchamiane regularnie przed każdym wydaniem

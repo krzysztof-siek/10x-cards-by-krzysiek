@@ -12,6 +12,7 @@
 - [Project Scope](#project-scope)
 - [Project Status](#project-status)
 - [License](#license)
+- [Testing](#testing)
 
 ## Tech Stack
 
@@ -20,6 +21,11 @@
 - **Styling:** Tailwind CSS 4, Shadcn/ui
 - **Backend:** Supabase (PostgreSQL, Authentication)
 - **AI Integration:** Openrouter.ai (LLM models)
+- **Testing:**
+  - **Unit/Component Testing:** Vitest, React Testing Library
+  - **Integration Testing:** Vitest with Supabase test client
+  - **E2E Testing:** Playwright
+  - **Test Automation:** GitHub Actions
 - **CI/CD & Hosting:** GitHub Actions, DigitalOcean
 
 ## Getting Started
@@ -70,6 +76,9 @@ npm run preview
 - `npm run lint` — Lint the codebase with ESLint
 - `npm run lint:fix` — Lint and automatically fix issues
 - `npm run format` — Format code with Prettier
+- `npm run test` — Run unit and component tests with Vitest
+- `npm run test:e2e` — Run end-to-end tests with Playwright
+- `npm run test:coverage` — Generate test coverage report
 
 ## Project Scope
 
@@ -100,3 +109,52 @@ This project is currently in **MVP development** stage. Core features are implem
 ## License
 
 _No license specified._ Please add a `LICENSE` file to define the project's licensing.
+
+## Testing
+
+This project includes both unit testing with Vitest and E2E testing with Playwright.
+
+### Unit Tests (Vitest)
+
+Unit tests are used to test individual components and functions in isolation.
+
+```bash
+# Run unit tests
+npm run test
+
+# Run unit tests in watch mode
+npm run test:watch
+
+# Run unit tests with UI
+npm run test:ui
+
+# Run unit tests with coverage
+npm run test:coverage
+```
+
+### E2E Tests (Playwright)
+
+E2E tests are used to test the application from a user's perspective.
+
+```bash
+# Run E2E tests
+npm run test:e2e
+
+# Run E2E tests with UI
+npm run test:e2e:ui
+```
+
+### Directory Structure
+
+- `tests/` - Vitest setup and configuration
+- `playwright/` - Playwright tests and configuration
+  - `playwright/tests/` - Test files
+  - `playwright/pages/` - Page objects for the Page Object Model pattern
+  - `playwright/fixtures/` - Test fixtures including accessibility testing
+
+### Test Guidelines
+
+- Write unit tests for individual components and utility functions
+- Write E2E tests for critical user flows
+- Use Page Object Model pattern for E2E tests to improve maintainability
+- Include accessibility tests to ensure the application is accessible to all users
