@@ -6,10 +6,10 @@ import { Toaster } from "../../components/ui/sonner";
 // Mark this page as requiring server-side rendering
 export const prerender = false;
 
-// In the future, redirect already logged in users to the generator page
-// if (Astro.locals.user) {
-//   return Astro.redirect("/generate");
-// }
+// Przekierowanie zalogowanych użytkowników do strony z fiszkami
+if (Astro.locals.user) {
+  return Astro.redirect("/flashcards");
+}
 ---
 
 <Layout title="Rejestracja - 10x Cards">

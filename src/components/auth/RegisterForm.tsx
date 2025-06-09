@@ -13,23 +13,24 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "sonner";
+import type { AuthResponseDTO } from "@/types";
 
 const registerSchema = z
   .object({
     email: z.string().email("Nieprawidłowy format adresu email"),
     password: z
       .string()
-      .min(8, "Hasło musi mieć co najmniej 8 znaków")
-      .regex(/[A-Z]/, "Hasło musi zawierać co najmniej jedną wielką literę")
-      .regex(/\d/, "Hasło musi zawierać co najmniej jedną cyfrę")
+      .min(8, "Hasło musi mieć minimum 8 znaków")
+      .regex(/[A-Z]/, "Hasło musi zawierać przynajmniej jedną wielką literę")
+      .regex(/[0-9]/, "Hasło musi zawierać przynajmniej jedną cyfrę")
       .regex(
-        /[!@#$%^&*(),.?":{}|<>]/,
-        "Hasło musi zawierać co najmniej jeden znak specjalny"
+        /[^A-Za-z0-9]/,
+        "Hasło musi zawierać przynajmniej jeden znak specjalny"
       ),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Hasła nie są zgodne",
+    message: "Hasła muszą być identyczne",
     path: ["confirmPassword"],
   });
 
@@ -50,15 +51,32 @@ export function RegisterForm() {
   async function onSubmit(data: RegisterFormValues) {
     setIsLoading(true);
     try {
-      // This is just a placeholder for future backend implementation
-      console.log("Register data:", data);
-      toast.success("Zarejestrowano pomyślnie");
-      // Backend implementation will go here in the future
-      // For now, we'll just simulate a successful registration
-      window.location.href = "/generate";
+      // Wywołanie API rejestracji
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json() as AuthResponseDTO;
+
+      if (response.ok && result.success) {
+        toast.success(result.message || "Zarejestrowano pomyślnie");
+        
+        // Przekierowanie do strony z fiszkami
+        if (result.redirectTo) {
+          window.location.href = result.redirectTo;
+        } else {
+          window.location.href = "/flashcards";
+        }
+      } else {
+        toast.error(result.message || "Błąd podczas rejestracji");
+      }
     } catch (error) {
       console.error("Registration error:", error);
-      toast.error("Błąd podczas rejestracji");
+      toast.error("Wystąpił błąd podczas rejestracji");
     } finally {
       setIsLoading(false);
     }

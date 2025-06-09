@@ -2,6 +2,32 @@ import { supabaseClient } from '../../db/supabase.client';
 import type { AuthError, Session, User } from '@supabase/supabase-js';
 
 class AuthService {
+  async register(email: string, password: string): Promise<{ 
+    user: User | null; 
+    session: Session | null; 
+    error: AuthError | null;
+  }> {
+    try {
+      const { data, error } = await supabaseClient.auth.signUp({
+        email,
+        password,
+      });
+
+      return {
+        user: data?.user || null,
+        session: data?.session || null,
+        error,
+      };
+    } catch (error) {
+      console.error('Registration error:', error);
+      return {
+        user: null,
+        session: null,
+        error: error as AuthError,
+      };
+    }
+  }
+
   async login(email: string, password: string): Promise<{ 
     user: User | null; 
     session: Session | null; 
