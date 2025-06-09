@@ -1,0 +1,18 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { FlashcardsView } from "../components/flashcards";
+
+// Ensure page is protected for authenticated users only
+// This will need to be updated once authentication is implemented
+// const user = Astro.locals.user;
+// if (!user) {
+//   return Astro.redirect("/login");
+// }
+---
+
+<Layout title="10x-cards - Moje fiszki">
+  <div class="container py-6">
+    <h1 class="text-3xl font-bold mb-6">Moje fiszki</h1>
+    <FlashcardsView client:load />
+  </div>
+</Layout> 
