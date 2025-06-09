@@ -93,6 +93,16 @@ export function FlashcardFormDialog({
   }, [isOpen, flashcardToEdit, form]);
 
   const onSubmit = (values: FlashcardFormValues) => {
+    // If creating a new flashcard, ensure source is 'manual' and generation_id is null
+    if (!isEditing) {
+      values.source = 'manual';
+      values.generation_id = null;
+    }
+    // If editing an AI-generated card, change source to 'ai-edited'
+    else if (isAiSource) {
+      values.source = 'ai-edited';
+    }
+    
     onSave(values);
   };
 

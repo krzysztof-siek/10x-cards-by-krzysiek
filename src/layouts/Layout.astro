@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import Topbar from "../components/Topbar.astro";
 
 interface Props {
   title?: string;
@@ -18,7 +19,10 @@ const { title = "10x-cards - Twoje fiszki edukacyjne" } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
-    <slot />
+    <Topbar />
+    <main class="container max-w-8xl mx-auto px-2 py-8">
+      <slot />
+    </main>
   </body>
 </html>
 

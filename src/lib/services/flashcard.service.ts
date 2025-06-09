@@ -17,6 +17,9 @@ interface SearchParams {
   source?: Source;
 }
 
+// Constant for test user ID for development purposes
+const TEST_USER_ID = '39ad558a-561f-4b9a-9cc7-e0580476a0f8';
+
 export class FlashcardService {
   constructor(private supabase: SupabaseClient) {}
 
@@ -105,12 +108,13 @@ export class FlashcardService {
       };
     }
 
-    // Process each flashcard
+    // Process each flashcard and add user_id
     const flashcardsToInsert = flashcards.map(card => ({
       front: card.front,
       back: card.back,
       source: card.source,
-      generation_id: card.generation_id
+      generation_id: card.generation_id,
+      user_id: TEST_USER_ID // Add the test user ID for development
     }));
 
     // Insert all flashcards in a single operation
