@@ -11,19 +11,11 @@ export interface FlashcardViewModel extends FlashcardDto {
   isDeleting?: boolean;
 }
 
-// Collection type
-export interface Collection {
-  id: number;
-  name: string;
-  flashcard_count?: number;
-}
-
 // API filters type
 export interface ApiFilters {
   page: number;
   limit: number;
   search: string;
-  collectionId: number | null;
 }
 
 // Dialog state type
@@ -37,8 +29,9 @@ interface DialogState {
 export function useFlashcards() {
   // State
   const [flashcards, setFlashcards] = useState<FlashcardViewModel[]>([]);
-  const [collections, setCollections] = useState<Collection[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pagination, setPagination] = useState({
     page: 1,
@@ -49,7 +42,6 @@ export function useFlashcards() {
     page: 1,
     limit: 10,
     search: "",
-    collectionId: null,
   });
   const [dialogState, setDialogState] = useState<DialogState>({
     isFlashcardFormOpen: false,
@@ -59,8 +51,12 @@ export function useFlashcards() {
   });
 
   // Load flashcards from API
-  const loadFlashcards = useCallback(async () => {
-    setIsLoading(true);
+  const loadFlashcards = useCallback(async (reset = true) => {
+    if (reset) {
+      setIsLoading(true);
+    } else {
+      setIsLoadingMore(true);
+    }
     setError(null);
     
     try {
@@ -73,10 +69,6 @@ export function useFlashcards() {
         queryParams.append("search", filters.search);
       }
       
-      if (filters.collectionId !== null) {
-        queryParams.append("collectionId", filters.collectionId.toString());
-      }
-      
       const response = await fetch(`/api/flashcards?${queryParams.toString()}`);
       
       if (!response.ok) {
@@ -85,39 +77,46 @@ export function useFlashcards() {
       
       const data: FlashcardsListResponseDto = await response.json();
       
-      setFlashcards(data.data);
+      if (reset) {
+        setFlashcards(data.data);
+      } else {
+        setFlashcards((prev) => [...prev, ...data.data]);
+      }
+      
       setPagination(data.meta);
+      
+      // Determine if there are more items to load
+      setHasMore(data.meta.page * data.meta.limit < data.meta.total);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Wystąpił nieznany błąd");
     } finally {
-      setIsLoading(false);
+      if (reset) {
+        setIsLoading(false);
+      } else {
+        setIsLoadingMore(false);
+      }
     }
   }, [filters]);
 
-  // Load collections
-  const loadCollections = useCallback(async () => {
-    try {
-      // This is a placeholder. API for collections is not defined yet.
-      // Will be implemented when the collections API is ready.
-      const mockCollections: Collection[] = [
-        { id: 1, name: "Wszystkie", flashcard_count: 42 },
-        { id: 2, name: "Języki obce", flashcard_count: 15 },
-        { id: 3, name: "Programowanie", flashcard_count: 27 }
-      ];
-      setCollections(mockCollections);
-    } catch (err) {
-      console.error("Failed to load collections:", err);
+  // Load more flashcards
+  const loadMore = useCallback(() => {
+    if (isLoadingMore || !hasMore) return;
+    
+    setFilters((prev) => ({
+      ...prev,
+      page: prev.page + 1,
+    }));
+    
+    loadFlashcards(false);
+  }, [isLoadingMore, hasMore, loadFlashcards]);
+
+  // Load data on mount and when search filter changes
+  useEffect(() => {
+    // Only reset and load when search changes
+    if (filters.page === 1) {
+      loadFlashcards(true);
     }
-  }, []);
-
-  // Load data on mount and when filters change
-  useEffect(() => {
-    loadFlashcards();
-  }, [loadFlashcards]);
-
-  useEffect(() => {
-    loadCollections();
-  }, [loadCollections]);
+  }, [filters.search, filters.page, loadFlashcards]);
 
   // Dialog actions
   const openCreateDialog = useCallback(() => {
@@ -172,7 +171,12 @@ export function useFlashcards() {
           throw new Error(`HTTP error ${response.status}`);
         }
 
-        await loadFlashcards();
+        // Reset to page 1 and reload
+        setFilters((prev) => ({
+          ...prev,
+          page: 1,
+        }));
+        await loadFlashcards(true);
         closeDialog();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Wystąpił błąd podczas tworzenia fiszki");
@@ -186,25 +190,38 @@ export function useFlashcards() {
       if (!dialogState.flashcardToEdit) return;
       
       try {
+        // Jeśli edytujemy fiszkę, która była stworzona przez AI, zmień jej typ na ai-edited
+        let updatedData = { ...data };
+        const isAiSource = dialogState.flashcardToEdit.source === 'ai-full' || dialogState.flashcardToEdit.source === 'ai-edited';
+        
+        if (isAiSource) {
+          updatedData.source = 'ai-edited';
+        }
+        
         const response = await fetch(`/api/flashcards/${dialogState.flashcardToEdit.id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify(updatedData),
         });
 
         if (!response.ok) {
           throw new Error(`HTTP error ${response.status}`);
         }
 
-        await loadFlashcards();
+        // Update the flashcard in the current list
+        const responseData = await response.json();
+        setFlashcards((current) =>
+          current.map((f) => (f.id === dialogState.flashcardToEdit?.id ? responseData.flashcard : f))
+        );
+        
         closeDialog();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Wystąpił błąd podczas aktualizacji fiszki");
       }
     },
-    [dialogState.flashcardToEdit, loadFlashcards, closeDialog]
+    [dialogState.flashcardToEdit, closeDialog]
   );
 
   const deleteFlashcard = useCallback(
@@ -226,6 +243,12 @@ export function useFlashcards() {
         // If successful, remove from list
         setFlashcards((current) => current.filter((f) => f.id !== id));
         closeDialog();
+        
+        // Update total count
+        setPagination((prev) => ({
+          ...prev,
+          total: Math.max(0, prev.total - 1)
+        }));
       } catch (err) {
         setError(err instanceof Error ? err.message : "Wystąpił błąd podczas usuwania fiszki");
         // Reset deleting state
@@ -237,72 +260,29 @@ export function useFlashcards() {
     [closeDialog]
   );
 
-  // Collection actions
-  const selectCollection = useCallback((collectionId: number | null) => {
-    setFilters((prev) => ({
-      ...prev,
-      collectionId,
-      page: 1, // Reset to first page when changing collection
-    }));
-  }, []);
-
-  const createCollection = useCallback(async (name: string) => {
-    // This is a placeholder. Will be implemented when the collections API is ready.
-    console.log("Creating collection:", name);
-    // For now, just add a mock collection to the state
-    const newCollection: Collection = {
-      id: Math.max(0, ...collections.map((c) => c.id)) + 1,
-      name,
-      flashcard_count: 0,
-    };
-    setCollections((prev) => [...prev, newCollection]);
-  }, [collections]);
-
-  const deleteCollection = useCallback(async (id: number) => {
-    // This is a placeholder. Will be implemented when the collections API is ready.
-    console.log("Deleting collection:", id);
-    // For now, just remove from state
-    setCollections((prev) => prev.filter((c) => c.id !== id));
-    
-    // If the deleted collection was selected, reset to null
-    if (filters.collectionId === id) {
-      selectCollection(null);
-    }
-  }, [filters.collectionId, selectCollection]);
-
-  // Pagination action
-  const setPage = useCallback((page: number) => {
-    setFilters((prev) => ({
-      ...prev,
-      page,
-    }));
-  }, []);
-
   // Return state and actions
   return {
     state: {
       flashcards,
-      collections,
       pagination,
       filters,
       isLoading,
+      isLoadingMore,
+      hasMore,
       error,
       dialogState,
     },
     actions: {
       loadFlashcards,
+      loadMore,
       createFlashcard,
       updateFlashcard,
       deleteFlashcard,
       setFilters,
-      setPage,
       openCreateDialog,
       openEditDialog,
       openDeleteDialog,
       closeDialog,
-      selectCollection,
-      createCollection,
-      deleteCollection,
     },
   };
 } 

@@ -20,6 +20,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 import type { FlashcardCreateDto, FlashcardUpdateDto, Source } from "../../types";
 import type { FlashcardViewModel } from "./hooks/useFlashcards";
 
@@ -44,6 +46,7 @@ interface FlashcardFormDialogProps {
   onClose: () => void;
   onSave: (data: FlashcardCreateDto | FlashcardUpdateDto) => void;
   flashcardToEdit?: FlashcardViewModel | null;
+  error?: string | null;
 }
 
 export function FlashcardFormDialog({
@@ -51,9 +54,11 @@ export function FlashcardFormDialog({
   onClose,
   onSave,
   flashcardToEdit,
+  error,
 }: FlashcardFormDialogProps) {
   const isEditing = !!flashcardToEdit;
   const title = isEditing ? "Edytuj fiszkę" : "Dodaj fiszkę";
+  const isAiSource = flashcardToEdit?.source === 'ai-full' || flashcardToEdit?.source === 'ai-edited';
 
   // Form with zod validation
   const form = useForm<FlashcardFormValues>({
@@ -96,6 +101,11 @@ export function FlashcardFormDialog({
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
+          {isAiSource && (
+            <div className="text-sm text-muted-foreground mt-1">
+              Edycja fiszki wygenerowanej przez AI spowoduje zmianę jej typu na "AI (edytowane)".
+            </div>
+          )}
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -141,6 +151,12 @@ export function FlashcardFormDialog({
             </DialogFooter>
           </form>
         </Form>
+        {error && (
+          <Alert variant="destructive" className="mt-4">
+            <AlertCircle className="h-4 w-4 mr-2" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
       </DialogContent>
     </Dialog>
   );
