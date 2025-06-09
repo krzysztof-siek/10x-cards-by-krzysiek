@@ -10,9 +10,6 @@ import { supabaseClient } from '../../../db/supabase.client';
 
 export const prerender = false;
 
-const TEST_USER_ID = '39ad558a-561f-4b9a-9cc7-e0580476a0f8';
-const IS_DEVELOPMENT = import.meta.env.MODE === 'development';
-
 /**
  * Helper function to parse and validate ID parameter
  */
@@ -29,8 +26,22 @@ function parseAndValidateId(id: string | undefined): number | null {
  * GET /api/flashcards/:id
  * Get a single flashcard by ID
  */
-export const GET: APIRoute = async ({ params }) => {
+export const GET: APIRoute = async ({ params, locals }) => {
   try {
+    // Sprawdzenie autoryzacji
+    if (!locals.user) {
+      return new Response(
+        JSON.stringify({
+          error: 'Unauthorized',
+          message: 'You must be logged in to access this resource'
+        }),
+        { 
+          status: 401,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
     const id = parseAndValidateId(params.id);
     
     if (id === null) {
@@ -46,14 +57,14 @@ export const GET: APIRoute = async ({ params }) => {
       );
     }
 
-    // In development mode, use test user
-    const userId = TEST_USER_ID;
-    const supabase = supabaseClient;
+    // Używamy ID zalogowanego użytkownika
+    const userId = locals.user.id;
+    const supabase = locals.supabase;
     const flashcardService = new FlashcardService(supabase);
 
     try {
-      // Get flashcard using the service
-      const flashcard = await flashcardService.getById(id);
+      // Get flashcard using the service - przekazujemy userId
+      const flashcard = await flashcardService.getById(id, userId);
       
       // Return response
       const response: FlashcardDetailResponseDto = { flashcard };
@@ -100,8 +111,22 @@ export const GET: APIRoute = async ({ params }) => {
  * PUT /api/flashcards/:id
  * Update a flashcard
  */
-export const PUT: APIRoute = async ({ request, params }) => {
+export const PUT: APIRoute = async ({ request, params, locals }) => {
   try {
+    // Sprawdzenie autoryzacji
+    if (!locals.user) {
+      return new Response(
+        JSON.stringify({
+          error: 'Unauthorized',
+          message: 'You must be logged in to update a flashcard'
+        }),
+        { 
+          status: 401,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
     const id = parseAndValidateId(params.id);
     
     if (id === null) {
@@ -117,9 +142,9 @@ export const PUT: APIRoute = async ({ request, params }) => {
       );
     }
 
-    // In development mode, use test user
-    const userId = TEST_USER_ID;
-    const supabase = supabaseClient;
+    // Używamy ID zalogowanego użytkownika
+    const userId = locals.user.id;
+    const supabase = locals.supabase;
     const flashcardService = new FlashcardService(supabase);
 
     // Parse and validate the request body
@@ -144,8 +169,8 @@ export const PUT: APIRoute = async ({ request, params }) => {
     }
 
     try {
-      // Update flashcard using the service
-      const result = await flashcardService.update(id, validationResult.data);
+      // Update flashcard using the service - przekazujemy userId
+      const result = await flashcardService.update(id, validationResult.data, userId);
       
       // Return response
       return new Response(JSON.stringify(result), {
@@ -191,8 +216,22 @@ export const PUT: APIRoute = async ({ request, params }) => {
  * DELETE /api/flashcards/:id
  * Delete a flashcard
  */
-export const DELETE: APIRoute = async ({ params }) => {
+export const DELETE: APIRoute = async ({ params, locals }) => {
   try {
+    // Sprawdzenie autoryzacji
+    if (!locals.user) {
+      return new Response(
+        JSON.stringify({
+          error: 'Unauthorized',
+          message: 'You must be logged in to delete a flashcard'
+        }),
+        { 
+          status: 401,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
     const id = parseAndValidateId(params.id);
     
     if (id === null) {
@@ -208,14 +247,14 @@ export const DELETE: APIRoute = async ({ params }) => {
       );
     }
 
-    // In development mode, use test user
-    const userId = TEST_USER_ID;
-    const supabase = supabaseClient;
+    // Używamy ID zalogowanego użytkownika
+    const userId = locals.user.id;
+    const supabase = locals.supabase;
     const flashcardService = new FlashcardService(supabase);
 
     try {
-      // Delete flashcard using the service
-      await flashcardService.delete(id);
+      // Delete flashcard using the service - przekazujemy userId
+      await flashcardService.delete(id, userId);
       
       // Return empty response with 204 status code
       return new Response(null, { status: 204 });

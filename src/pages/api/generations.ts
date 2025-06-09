@@ -8,9 +8,6 @@ import { supabaseClient } from '../../db/supabase.client';
 
 export const prerender = false;
 
-const TEST_USER_ID = '39ad558a-561f-4b9a-9cc7-e0580476a0f8';
-const IS_DEVELOPMENT = import.meta.env.MODE === 'development';
-
 const generateFlashcardsSchema = z.object({
   source_text: z
     .string()
@@ -18,13 +15,27 @@ const generateFlashcardsSchema = z.object({
     .max(10000, 'Source text cannot exceed 10000 characters')
 });
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
     console.log('API /generations: Otrzymano nowe żądanie generacji fiszek');
     
-    // W trybie deweloperskim używamy test usera
-    const userId = TEST_USER_ID;
-    const supabase = supabaseClient;
+    // Sprawdzenie autoryzacji
+    if (!locals.user) {
+      return new Response(
+        JSON.stringify({
+          error: 'Unauthorized',
+          message: 'You must be logged in to generate flashcards'
+        }),
+        { 
+          status: 401,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
+    
+    // Używamy ID zalogowanego użytkownika
+    const userId = locals.user.id;
+    const supabase = locals.supabase; // Używamy supabase z locals zamiast globalnego klienta
     const errorLogService = new ErrorLogService(supabase);
     const generationService = new GenerationService(supabase);
 

@@ -11,15 +11,26 @@ import { supabaseClient } from '../../../db/supabase.client';
 
 export const prerender = false;
 
-const TEST_USER_ID = '39ad558a-561f-4b9a-9cc7-e0580476a0f8';
-const IS_DEVELOPMENT = import.meta.env.MODE === 'development';
-
 /**
  * GET /api/flashcards
  * List flashcards with pagination and search capabilities
  */
-export const GET: APIRoute = async ({ request, url }) => {
+export const GET: APIRoute = async ({ request, url, locals }) => {
   try {
+    // Sprawdzenie autoryzacji
+    if (!locals.user) {
+      return new Response(
+        JSON.stringify({
+          error: 'Unauthorized',
+          message: 'You must be logged in to access this resource'
+        }),
+        { 
+          status: 401,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
     // Get search parameters from URL
     const searchParams = {
       page: url.searchParams.get('page') ? Number(url.searchParams.get('page')) : undefined,
@@ -48,13 +59,16 @@ export const GET: APIRoute = async ({ request, url }) => {
       });
     }
 
-    // In development mode, use test user
-    const userId = TEST_USER_ID;
-    const supabase = supabaseClient;
+    // Używamy ID zalogowanego użytkownika
+    const userId = locals.user.id;
+    const supabase = locals.supabase; // Używamy supabase z locals zamiast globalnego klienta
     const flashcardService = new FlashcardService(supabase);
 
-    // Get flashcards using the service
-    const result = await flashcardService.list(validationResult.data);
+    // Get flashcards using the service - dodajemy userId do parametrów
+    const result = await flashcardService.list({
+      ...validationResult.data,
+      userId
+    });
 
     // Return response
     return new Response(JSON.stringify(result), {
@@ -82,11 +96,25 @@ export const GET: APIRoute = async ({ request, url }) => {
  * POST /api/flashcards
  * Create new flashcards (batch operation)
  */
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    // In development mode, use test user
-    const userId = TEST_USER_ID;
-    const supabase = supabaseClient;
+    // Sprawdzenie autoryzacji
+    if (!locals.user) {
+      return new Response(
+        JSON.stringify({
+          error: 'Unauthorized',
+          message: 'You must be logged in to create flashcards'
+        }),
+        { 
+          status: 401,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    // Używamy ID zalogowanego użytkownika
+    const userId = locals.user.id;
+    const supabase = locals.supabase; // Używamy supabase z locals zamiast globalnego klienta
     const flashcardService = new FlashcardService(supabase);
 
     // Parse and validate the request body
@@ -111,7 +139,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Create flashcards using the service
-    const result = await flashcardService.create(validationResult.data);
+    const result = await flashcardService.create(validationResult.data, userId);
 
     // Return response
     return new Response(JSON.stringify(result), {

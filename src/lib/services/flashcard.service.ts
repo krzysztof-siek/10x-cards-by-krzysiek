@@ -15,20 +15,19 @@ interface SearchParams {
   limit?: number;
   search?: string;
   source?: Source;
+  userId: string;
 }
-
-// Constant for test user ID for development purposes
-const TEST_USER_ID = '39ad558a-561f-4b9a-9cc7-e0580476a0f8';
 
 export class FlashcardService {
   constructor(private supabase: SupabaseClient) {}
 
-  async list(params: SearchParams = {}): Promise<FlashcardsListResponseDto> {
+  async list(params: SearchParams): Promise<FlashcardsListResponseDto> {
     const {
       page = 1,
       limit = 20,
       search = '',
-      source
+      source,
+      userId
     } = params;
 
     // Ensure valid pagination values
@@ -39,7 +38,8 @@ export class FlashcardService {
     // Start building the query
     let query = this.supabase
       .from('flashcards')
-      .select('id, front, back, source, generation_id, created_at, updated_at', { count: 'exact' });
+      .select('id, front, back, source, generation_id, created_at, updated_at', { count: 'exact' })
+      .eq('user_id', userId);
 
     // Apply search filter if provided
     if (search) {
@@ -71,11 +71,12 @@ export class FlashcardService {
     };
   }
 
-  async getById(id: number): Promise<FlashcardDto> {
+  async getById(id: number, userId: string): Promise<FlashcardDto> {
     const { data, error } = await this.supabase
       .from('flashcards')
       .select('id, front, back, source, generation_id, created_at, updated_at')
       .eq('id', id)
+      .eq('user_id', userId)
       .single();
 
     if (error) {
@@ -88,7 +89,7 @@ export class FlashcardService {
     return data;
   }
 
-  async create(cmd: FlashcardsCreateCommand): Promise<FlashcardsCreateResponseDto> {
+  async create(cmd: FlashcardsCreateCommand, userId: string): Promise<FlashcardsCreateResponseDto> {
     const { flashcards } = cmd;
     
     // Track creation results
@@ -114,7 +115,7 @@ export class FlashcardService {
       back: card.back,
       source: card.source,
       generation_id: card.generation_id,
-      user_id: TEST_USER_ID // Add the test user ID for development
+      user_id: userId
     }));
 
     // Insert all flashcards in a single operation
@@ -140,9 +141,9 @@ export class FlashcardService {
     };
   }
 
-  async update(id: number, dto: FlashcardUpdateDto): Promise<FlashcardUpdateResponseDto> {
-    // First check if the flashcard exists
-    await this.getById(id);
+  async update(id: number, dto: FlashcardUpdateDto, userId: string): Promise<FlashcardUpdateResponseDto> {
+    // First check if the flashcard exists and belongs to the user
+    await this.getById(id, userId);
     
     // Prepare update data
     const updateData = {
@@ -158,6 +159,7 @@ export class FlashcardService {
       .from('flashcards')
       .update(updateData)
       .eq('id', id)
+      .eq('user_id', userId)
       .select('id, front, back, source, generation_id, created_at, updated_at')
       .single();
 
@@ -170,15 +172,16 @@ export class FlashcardService {
     };
   }
 
-  async delete(id: number): Promise<void> {
-    // First check if the flashcard exists
-    await this.getById(id);
+  async delete(id: number, userId: string): Promise<void> {
+    // First check if the flashcard exists and belongs to the user
+    await this.getById(id, userId);
     
     // Delete the flashcard
     const { error } = await this.supabase
       .from('flashcards')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .eq('user_id', userId);
 
     if (error) {
       throw new Error(`Failed to delete flashcard: ${error.message}`);

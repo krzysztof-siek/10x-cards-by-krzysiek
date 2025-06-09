@@ -6,9 +6,6 @@ import { FlashcardService } from '../../../../lib/services/flashcard.service';
 
 export const prerender = false;
 
-const TEST_USER_ID = '39ad558a-561f-4b9a-9cc7-e0580476a0f8';
-const IS_DEVELOPMENT = import.meta.env.MODE === 'development';
-
 // Walidacja danych wejściowych
 const acceptSuggestionsSchema = z.object({
   accepted: z.array(
@@ -20,11 +17,25 @@ const acceptSuggestionsSchema = z.object({
   ).min(1, 'At least one suggestion must be accepted')
 });
 
-export const POST: APIRoute = async ({ request, params }) => {
+export const POST: APIRoute = async ({ request, params, locals }) => {
   try {
-    // W trybie deweloperskim używamy test usera
-    const userId = TEST_USER_ID;
-    const supabase = supabaseClient;
+    // Sprawdzenie autoryzacji
+    if (!locals.user) {
+      return new Response(
+        JSON.stringify({
+          error: 'Unauthorized',
+          message: 'You must be logged in to save flashcards'
+        }),
+        { 
+          status: 401,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
+    
+    // Używamy ID zalogowanego użytkownika
+    const userId = locals.user.id;
+    const supabase = locals.supabase;
     const flashcardService = new FlashcardService(supabase);
     
     // Pobierz ID generacji z parametrów URL
