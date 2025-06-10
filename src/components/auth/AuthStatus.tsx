@@ -35,8 +35,7 @@ export function AuthStatus({ user }: AuthStatusProps) {
       } else {
         toast.error(result.message || "Wystąpił błąd podczas wylogowywania");
       }
-    } catch (error) {
-      console.error("Logout error:", error);
+    } catch {
       toast.error("Wystąpił błąd podczas wylogowywania");
     }
   };

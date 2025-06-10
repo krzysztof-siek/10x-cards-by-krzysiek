@@ -22,7 +22,6 @@ class AuthService {
         error,
       };
     } catch (error) {
-      console.error("Registration error:", error);
       return {
         user: null,
         session: null,
@@ -51,7 +50,6 @@ class AuthService {
         error,
       };
     } catch (error) {
-      console.error("Login error:", error);
       return {
         user: null,
         session: null,
@@ -65,7 +63,6 @@ class AuthService {
       const { error } = await supabaseClient.auth.signOut();
       return { error };
     } catch (error) {
-      console.error("Logout error:", error);
       return { error: error as AuthError };
     }
   }
@@ -81,7 +78,6 @@ class AuthService {
         error,
       };
     } catch (error) {
-      console.error("Get session error:", error);
       return {
         session: null,
         error: error as AuthError,
@@ -100,7 +96,6 @@ class AuthService {
         error,
       };
     } catch (error) {
-      console.error("Get user error:", error);
       return {
         user: null,
         error: error as AuthError,

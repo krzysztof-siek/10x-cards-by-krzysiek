@@ -36,21 +36,19 @@ export function NewPasswordForm() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [isSubmitted, setIsSubmitted] = React.useState(false);
 
-  async function onSubmit(data: NewPasswordFormValues) {
+  const onSubmit = async () => {
     setIsLoading(true);
     try {
       // This is just a placeholder for future backend implementation
       // We'll need to extract the token from the URL for the actual implementation
-      console.log("New password data:", data);
       setIsSubmitted(true);
       toast.success("Hasło zostało zmienione");
-    } catch (error) {
-      console.error("New password error:", error);
+    } catch {
       toast.error("Błąd podczas zmiany hasła");
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   if (isSubmitted) {
     return (

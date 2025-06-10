@@ -94,7 +94,6 @@ export const POST: APIRoute = async ({ request, params, locals }) => {
       },
     });
   } catch (error) {
-    console.error("Unexpected error:", error);
     return new Response(
       JSON.stringify({
         error: "Internal Server Error",

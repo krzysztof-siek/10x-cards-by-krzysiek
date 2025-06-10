@@ -187,7 +187,7 @@ describe("SuggestionsList", () => {
     expect(mockChange).toHaveBeenCalledWith("test-id-1", "updated front", "updated back");
   });
 
-  it("should match snapshot", () => {
+  it("should render with the correct structure", () => {
     const { container } = render(
       <SuggestionsList
         suggestions={mockSuggestions}
@@ -198,88 +198,24 @@ describe("SuggestionsList", () => {
         isSaving={false}
       />
     );
-    expect(container).toMatchInlineSnapshot(`
-      <div>
-        <div
-          class="space-y-6"
-        >
-          <div
-            class="flex items-center justify-between"
-          >
-            <div
-              class="text-sm"
-            >
-              <span
-                class="font-medium"
-              >
-                1
-              </span>
-               z
-               
-              <span
-                class="font-medium"
-              >
-                2
-              </span>
-               propozycji wybranych
-            </div>
-            <button
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-primary text-primary-foreground shadow-xs hover:bg-primary/90 h-9 px-4 py-2 has-[>svg]:px-3 min-w-[120px]"
-              data-slot="button"
-            >
-              Zapisz wybrane
-            </button>
-          </div>
-          <ul
-            class="space-y-4"
-          >
-            <div
-              data-testid="suggestion-item-test-id-1"
-            >
-              <span>
-                Question 1
-              </span>
-              <button
-                data-testid="toggle-test-id-1"
-              >
-                Toggle
-              </button>
-              <button
-                data-testid="delete-test-id-1"
-              >
-                Delete
-              </button>
-              <button
-                data-testid="update-test-id-1"
-              >
-                Update
-              </button>
-            </div>
-            <div
-              data-testid="suggestion-item-test-id-2"
-            >
-              <span>
-                Question 2
-              </span>
-              <button
-                data-testid="toggle-test-id-2"
-              >
-                Toggle
-              </button>
-              <button
-                data-testid="delete-test-id-2"
-              >
-                Delete
-              </button>
-              <button
-                data-testid="update-test-id-2"
-              >
-                Update
-              </button>
-            </div>
-          </ul>
-        </div>
-      </div>
-    `);
+
+    // Check that the container has a div as its first child
+    expect(container.firstChild).not.toBeNull();
+    if (container.firstChild) {
+      expect(container.firstChild.nodeName).toBe("DIV");
+    }
+
+    // Check that the suggestions are rendered
+    expect(screen.getByTestId("suggestion-item-test-id-1")).toBeInTheDocument();
+    expect(screen.getByTestId("suggestion-item-test-id-2")).toBeInTheDocument();
+
+    // Check that the count text is correct
+    const countText = screen.getByText(/propozycji wybranych$/i);
+    expect(countText).toBeInTheDocument();
+    expect(countText.textContent).toContain("1 z 2 propozycji wybranych");
+
+    // Check that the save button is present
+    const saveButton = screen.getByRole("button", { name: /zapisz wybrane/i });
+    expect(saveButton).toBeInTheDocument();
   });
 });

@@ -52,8 +52,7 @@ export function LoginForm() {
       } else {
         toast.error(result.message || "Nieprawidłowe dane logowania");
       }
-    } catch (error) {
-      console.error("Login error:", error);
+    } catch {
       toast.error("Wystąpił błąd podczas logowania");
     } finally {
       setIsLoading(false);

@@ -13,8 +13,6 @@ const generateFlashcardsSchema = z.object({
 
 export const POST: APIRoute = async ({ request, locals }) => {
   try {
-    console.log("API /generations: Otrzymano nowe żądanie generacji fiszek");
-
     // Sprawdzenie autoryzacji
     if (!locals.user) {
       return new Response(
@@ -36,12 +34,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // Parse and validate input
     const body = (await request.json()) as GenerateFlashcardsCommand;
-    console.log(`API /generations: Otrzymano tekst o długości ${body.source_text.length} znaków`);
 
     const validationResult = generateFlashcardsSchema.safeParse(body);
 
     if (!validationResult.success) {
-      console.error("API /generations: Błąd walidacji:", validationResult.error.errors);
       return new Response(
         JSON.stringify({
           error: "Validation Error",
@@ -53,16 +49,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     try {
-      console.log("API /generations: Rozpoczynam generowanie fiszek");
       // Generate flashcard suggestions using the integrated GenerationService
       const result = await generationService.generateFlashcardSuggestions({
         userId,
         sourceText: body.source_text,
       });
-
-      console.log(
-        `API /generations: Generowanie zakończone sukcesem. Wygenerowano ${result.suggestions.length} fiszek`
-      );
 
       // Return response
       const response: GenerationCreateResponseDto = {
@@ -89,7 +80,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
       });
     } catch (error) {
       // Obsługa błędów związanych z generacją
-      console.error("API /generations: Błąd podczas generowania fiszek:", error);
       return new Response(
         JSON.stringify({
           error: "Generation Error",
@@ -100,7 +90,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
       );
     }
   } catch (error) {
-    console.error("API /generations: Nieoczekiwany błąd:", error);
     return new Response(
       JSON.stringify({
         error: "Internal Server Error",

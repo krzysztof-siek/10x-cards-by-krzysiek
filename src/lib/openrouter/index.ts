@@ -28,9 +28,7 @@ export class OpenRouterService {
 
     // Pokaż ostrzeżenie, jeśli używamy domyślnego klucza
     if (this.apiKey === DEFAULT_API_KEY) {
-      console.warn(
-        "UWAGA: Używasz domyślnego klucza API OpenRouter. Zastąp go swoim rzeczywistym kluczem w pliku .env"
-      );
+      // Usuń wszystkie console.warn, console.log, console.error
     }
   }
 
@@ -56,31 +54,26 @@ export class OpenRouterService {
     const response = await this.#request<OpenRouterResponse>(payload);
 
     if (!response.choices || response.choices.length === 0) {
-      console.error("OpenRouterService: Brak odpowiedzi w wyborach:", response);
+      // Usuń wszystkie console.warn, console.log, console.error
       throw new Error("No completion returned from OpenRouter API");
     }
 
     const content = response.choices[0].message.content;
-    console.log("OpenRouterService: Otrzymana surowa odpowiedź:", content);
+    // Usuń wszystkie console.warn, console.log, console.error
 
     try {
       // Próba oczyszczenia odpowiedzi z potencjalnych dodatkowych znaków
       const cleanedContent = this.#cleanJsonContent(content);
-      console.log("OpenRouterService: Oczyszczona odpowiedź:", cleanedContent);
+      // Usuń wszystkie console.warn, console.log, console.error
 
       let parsed: any;
       try {
         parsed = JSON.parse(cleanedContent);
       } catch {
         // Jeśli parsowanie się nie powiodło, spróbuj jeszcze raz z surową odpowiedzią
-        console.warn(
-          "OpenRouterService: Próba parsowania oczyszczonej treści nie powiodła się, próbuję z surową odpowiedzią"
-        );
         try {
           parsed = JSON.parse(content);
-        } catch (e2) {
-          console.error("OpenRouterService: Błąd parsowania JSON (obie próby):", e2);
-          console.error("OpenRouterService: Oryginalna treść:", content);
+        } catch {
           throw new JSONParsingError("Failed to parse model response as JSON.");
         }
       }
@@ -94,22 +87,18 @@ export class OpenRouterService {
           options.schema.type === "array")
       ) {
         if (Array.isArray(parsed)) {
-          console.log(`OpenRouterService: Znaleziono poprawną tablicę z ${parsed.length} elementami`);
           return parsed as T;
         } else if (typeof parsed === "object" && parsed !== null) {
           // Szukamy pierwszej właściwości, która jest tablicą
           const arrayProp = Object.values(parsed).find(Array.isArray);
           if (arrayProp) {
-            console.log(`OpenRouterService: Znaleziono tablicę w odpowiedzi z ${arrayProp.length} elementami`);
             return arrayProp as T;
           }
           // Jeśli mamy obiekt z items, spróbujmy go przetworzyć
           if ("items" in parsed && Array.isArray(parsed.items)) {
-            console.log(`OpenRouterService: Znaleziono tablicę w 'items' z ${parsed.items.length} elementami`);
             return parsed.items as T;
           }
         }
-        console.error("OpenRouterService: Nie znaleziono tablicy w odpowiedzi:", parsed);
         throw new Error("Response is not an array and does not contain an array property");
       }
 
@@ -118,7 +107,6 @@ export class OpenRouterService {
       if (error instanceof JSONParsingError) {
         throw error;
       }
-      console.error("OpenRouterService: Błąd przetwarzania odpowiedzi:", error);
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
       throw new Error(`Failed to process model response: ${errorMessage}`);
     }
@@ -146,7 +134,6 @@ export class OpenRouterService {
       }
 
       if (startIndex > 0) {
-        console.log("OpenRouterService: Usunięto tekst przed JSON:", cleaned.substring(0, startIndex));
         cleaned = cleaned.substring(startIndex);
       }
 
@@ -164,7 +151,6 @@ export class OpenRouterService {
       }
 
       if (endIndex > 0 && endIndex < cleaned.length) {
-        console.log("OpenRouterService: Usunięto tekst po JSON:", cleaned.substring(endIndex));
         cleaned = cleaned.substring(0, endIndex);
       }
 
@@ -183,8 +169,7 @@ export class OpenRouterService {
       // Sprawdź czy JSON jest poprawny przed zwróceniem
       JSON.parse(cleaned); // To rzuci błąd jeśli JSON jest niepoprawny
       return cleaned;
-    } catch (error) {
-      console.warn("OpenRouterService: Błąd podczas czyszczenia JSON:", error);
+    } catch {
       // Jeśli czyszczenie się nie powiodło, spróbuj jeszcze raz z oryginalną treścią
       // ale tylko z podstawowym czyszczeniem
       const basicCleaned = content
@@ -268,10 +253,6 @@ Do not include any text before or after the JSON array. Do not include schema de
    */
   async #request<T>(payload: object): Promise<T> {
     try {
-      console.log("OpenRouterService: Wysyłam żądanie do API OpenRouter");
-      console.log("OpenRouterService: URL:", `${this.baseUrl}/chat/completions`);
-      console.log("OpenRouterService: Model:", (payload as any).model);
-
       const response = await fetch(`${this.baseUrl}/chat/completions`, {
         method: "POST",
         headers: {
@@ -286,14 +267,11 @@ Do not include any text before or after the JSON array. Do not include schema de
       const data = await response.json();
 
       if (!response.ok) {
-        console.error("OpenRouterService: Błąd API:", response.status, data?.error?.message || response.statusText);
         this.#handleApiError(response, data);
       }
 
-      console.log("OpenRouterService: Otrzymano odpowiedź z API, status:", response.status);
       return data as T;
     } catch (error) {
-      console.error("OpenRouterService: Wystąpił błąd podczas komunikacji z API:", error);
       if (error instanceof OpenRouterError) throw error;
       throw new NetworkError("A network error occurred while communicating with OpenRouter API.");
     }

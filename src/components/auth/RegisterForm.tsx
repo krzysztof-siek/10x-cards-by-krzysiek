@@ -64,8 +64,7 @@ export function RegisterForm() {
       } else {
         toast.error(result.message || "Błąd podczas rejestracji");
       }
-    } catch (error) {
-      console.error("Registration error:", error);
+    } catch {
       toast.error("Wystąpił błąd podczas rejestracji");
     } finally {
       setIsLoading(false);

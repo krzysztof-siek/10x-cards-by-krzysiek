@@ -44,14 +44,11 @@ export class LLMService {
   }
 
   async generateFlashcardSuggestions(sourceText: string): Promise<LLMResponse> {
-    console.log("LLMService: Rozpoczynam generowanie fiszek z tekstu o długości", sourceText.length);
-
     let lastError: Error | null = null;
     let attempt = 0;
 
     while (attempt < this.config.maxRetries) {
       attempt++;
-      console.log(`LLMService: Próba #${attempt} z ${this.config.maxRetries}`);
 
       try {
         if (this.controller) {
@@ -61,33 +58,29 @@ export class LLMService {
 
         const timeoutId = setTimeout(() => {
           if (this.controller) {
-            console.log(`LLMService: Przekroczono czas oczekiwania (${this.config.timeoutMs}ms), przerywam żądanie`);
             this.controller.abort();
           }
         }, this.config.timeoutMs);
 
         try {
-          console.log("LLMService: Wysyłam żądanie do OpenRouter API, model:", this.config.model);
-          const schema = {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                front: { type: "string" },
-                back: { type: "string" },
-              },
-              required: ["front", "back"],
-            },
-            minItems: 3,
-            maxItems: 7,
-          };
-
           const suggestions = await this.openRouterService.getStructuredCompletion<SuggestionDto[]>({
             messages: [{ role: "user", content: sourceText }],
             model: this.config.model,
             systemPrompt: SYSTEM_PROMPT,
             schemaName: "flashcards",
-            schema,
+            schema: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  front: { type: "string" },
+                  back: { type: "string" },
+                },
+                required: ["front", "back"],
+              },
+              minItems: 3,
+              maxItems: 7,
+            },
             temperature: 0.9, // Zwiększamy temperaturę dla szybszych odpowiedzi
             maxTokens: 500, // Ograniczamy maksymalną długość odpowiedzi
           });
@@ -116,8 +109,6 @@ export class LLMService {
             throw new Error(`Too few valid flashcards: got ${validSuggestions.length}, expected at least 3`);
           }
 
-          console.log(`LLMService: Sukces! Wygenerowano ${validSuggestions.length} fiszek`);
-
           return { suggestions: validSuggestions };
         } catch (error) {
           clearTimeout(timeoutId);
@@ -125,7 +116,6 @@ export class LLMService {
         }
       } catch (error) {
         lastError = error as Error;
-        console.error(`LLMService: Błąd podczas generowania fiszek (próba ${attempt}):`, error);
 
         // Nie ponawia prób w przypadku błędów autentykacji
         if (error instanceof OpenRouterAuthenticationError) {
@@ -140,14 +130,12 @@ export class LLMService {
         // Dla błędów rate limit i błędów serwera, czekamy przed ponowieniem próby
         if (error instanceof OpenRouterRateLimitError || error instanceof OpenRouterServerError) {
           const delay = Math.min(Math.pow(2, attempt) * 1000, 10000); // Max 10 sekund
-          console.log(`LLMService: Czekam ${delay}ms przed kolejną próbą`);
           await new Promise((resolve) => setTimeout(resolve, delay));
           continue;
         }
 
         // Dla pozostałych błędów, również czekamy przed ponowną próbą
         const delay = Math.min(Math.pow(2, attempt) * 1000, 5000); // Max 5 sekund
-        console.log(`LLMService: Czekam ${delay}ms przed kolejną próbą`);
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }

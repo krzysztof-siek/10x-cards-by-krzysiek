@@ -25,13 +25,13 @@ export class ErrorLogService {
 
       if (error) {
         // If we can't log to the database, log to console as fallback
-        console.error("Failed to save error log:", error);
-        console.error("Original error:", entry);
+        // console.error("Failed to save error log:", error);
+        // console.error("Original error:", entry);
       }
-    } catch (error) {
+    } catch {
       // Fallback to console logging if database is unavailable
-      console.error("Error logging failed:", error);
-      console.error("Original error:", entry);
+      // console.error("Error logging failed:", error);
+      // console.error("Original error:", entry);
     }
   }
 

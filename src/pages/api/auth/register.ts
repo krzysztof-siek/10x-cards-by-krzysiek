@@ -102,9 +102,7 @@ export async function POST({ request }: APIContext): Promise<Response> {
         headers: { "Content-Type": "application/json" },
       }
     );
-  } catch (error) {
-    console.error("Registration error:", error);
-
+  } catch {
     return new Response(
       JSON.stringify({
         success: false,

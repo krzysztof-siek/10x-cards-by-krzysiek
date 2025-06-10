@@ -69,8 +69,6 @@ export const GET: APIRoute = async ({ url, locals }) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error fetching flashcards:", error);
-
     return new Response(
       JSON.stringify({
         error: "Internal Server Error",
@@ -140,8 +138,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Error creating flashcards:", error);
-
     return new Response(
       JSON.stringify({
         error: "Internal Server Error",

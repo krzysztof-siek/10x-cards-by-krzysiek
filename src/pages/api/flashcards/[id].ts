@@ -86,8 +86,6 @@ export const GET: APIRoute = async ({ params, locals }) => {
       throw error;
     }
   } catch (error) {
-    console.error("Error fetching flashcard:", error);
-
     return new Response(
       JSON.stringify({
         error: "Internal Server Error",
@@ -191,8 +189,6 @@ export const PUT: APIRoute = async ({ request, params, locals }) => {
       throw error;
     }
   } catch (error) {
-    console.error("Error updating flashcard:", error);
-
     return new Response(
       JSON.stringify({
         error: "Internal Server Error",
@@ -272,8 +268,6 @@ export const DELETE: APIRoute = async ({ params, locals }) => {
       throw error;
     }
   } catch (error) {
-    console.error("Error deleting flashcard:", error);
-
     return new Response(
       JSON.stringify({
         error: "Internal Server Error",

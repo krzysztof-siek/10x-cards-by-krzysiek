@@ -231,7 +231,7 @@ export class FlashcardService {
       .eq("id", generationId);
 
     if (error) {
-      console.error("Failed to update generation counts:", error);
+      // Usunąć wszystkie console.log, console.error
     }
   }
 }

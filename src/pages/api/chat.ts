@@ -66,8 +66,6 @@ export const POST: APIRoute = async ({ request }) => {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error: any) {
-    console.error("OpenRouter API error:", error);
-
     const status = error instanceof OpenRouterInvalidRequestError ? 400 : 500;
     const errorMessage = error.message || "An unknown error occurred";
 

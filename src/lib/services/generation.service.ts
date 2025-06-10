@@ -44,21 +44,16 @@ export class GenerationService {
     suggestions: SuggestionDto[];
   }> {
     const { userId, sourceText } = params;
-    console.log(`GenerationService: Rozpoczynam generowanie fiszek dla użytkownika ${userId}`);
-    console.log(`GenerationService: Długość tekstu źródłowego: ${sourceText.length} znaków`);
 
     const startTime = Date.now();
 
     // Generowanie fiszek za pomocą LLMService
-    console.log("GenerationService: Wywołuję LLMService.generateFlashcardSuggestions()");
     const result = await llmService.generateFlashcardSuggestions(sourceText);
     const generationDurationMs = Date.now() - startTime;
-    console.log(`GenerationService: Generowanie zakończone po ${generationDurationMs}ms`);
 
     // Tworzenie rekordu generacji w bazie danych
     if (result.error) {
       // Logowanie błędu, jeśli wystąpił
-      console.error("GenerationService: Błąd podczas generowania fiszek:", result.error);
       const sourceTextHash = crypto.createHash("sha256").update(sourceText).digest("hex");
 
       await this.logGenerationError({
@@ -75,9 +70,6 @@ export class GenerationService {
     }
 
     // Zapisujemy wygenerowane fiszki
-    console.log(`GenerationService: Zapisuję ${result.suggestions.length} wygenerowanych fiszek do bazy danych`);
-
-    // Sprawdź czy mamy jakieś sugestie przed utworzeniem rekordu
     if (!Array.isArray(result.suggestions) || result.suggestions.length === 0) {
       throw new Error("No valid flashcard suggestions to save");
     }
@@ -89,7 +81,6 @@ export class GenerationService {
       model: "openai/gpt-3.5-turbo", // Zaktualizowana nazwa modelu
       generationDurationMs,
     });
-    console.log(`GenerationService: Zapisano generację z ID: ${generation.id}`);
 
     return {
       generation,
@@ -117,10 +108,10 @@ export class GenerationService {
       });
 
       if (error) {
-        console.error("Failed to log generation error:", error);
+        // Ignorowanie błędów logowania
       }
-    } catch (error) {
-      console.error("Exception during logging generation error:", error);
+    } catch {
+      // Ignorowanie błędów logowania
     }
   }
 }

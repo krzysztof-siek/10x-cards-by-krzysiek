@@ -32,18 +32,14 @@ export async function POST(): Promise<Response> {
         headers: { "Content-Type": "application/json" },
       }
     );
-  } catch (error) {
-    console.error("Logout error:", error);
-
+  } catch {
+    // Obsługa błędu
     return new Response(
       JSON.stringify({
         success: false,
         message: "Wystąpił błąd podczas wylogowywania",
-      } as AuthResponseDTO),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+      }),
+      { status: 500 }
     );
   }
 }

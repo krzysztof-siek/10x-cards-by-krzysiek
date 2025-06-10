@@ -24,20 +24,18 @@ export function ResetPasswordForm() {
   const [isLoading, setIsLoading] = React.useState(false);
   const [isSubmitted, setIsSubmitted] = React.useState(false);
 
-  async function onSubmit(data: ResetPasswordFormValues) {
+  const onSubmit = async () => {
     setIsLoading(true);
     try {
       // This is just a placeholder for future backend implementation
-      console.log("Reset password data:", data);
       setIsSubmitted(true);
       toast.success("Link do resetowania hasła został wysłany");
-    } catch (error) {
-      console.error("Reset password error:", error);
+    } catch {
       toast.error("Błąd podczas wysyłania linku resetującego");
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   if (isSubmitted) {
     return (
