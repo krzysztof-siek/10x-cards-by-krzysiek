@@ -1,20 +1,8 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { type FlashcardViewModel } from "./hooks/useFlashcards";
 import { PencilIcon, TrashIcon, BrainIcon, UserIcon, CalendarIcon } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import type { Source } from "../../types";
@@ -31,9 +19,7 @@ function TruncatedText({ text, className }: { text: string; className?: string }
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className={cn("block truncate w-full cursor-help", className)}>
-            {text}
-          </span>
+          <span className={cn("block truncate w-full cursor-help", className)}>{text}</span>
         </TooltipTrigger>
         <TooltipContent side="bottom" align="start" className="max-w-md p-4">
           <p className="max-h-[300px] overflow-y-auto break-words">{text}</p>
@@ -46,10 +32,10 @@ function TruncatedText({ text, className }: { text: string; className?: string }
 // Format daty dla wyświetlania
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
-  return new Intl.DateTimeFormat('pl-PL', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
+  return new Intl.DateTimeFormat("pl-PL", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
   }).format(date);
 }
 
@@ -58,26 +44,26 @@ function SourceBadge({ source }: { source: Source }) {
   let label: string;
   let variant: "default" | "outline" | "secondary" | "destructive";
   let icon = null;
-  
+
   switch (source) {
-    case 'ai-full':
+    case "ai-full":
       label = "AI";
       variant = "secondary";
       icon = <BrainIcon className="h-3 w-3 mr-1" />;
       break;
-    case 'ai-edited':
+    case "ai-edited":
       label = "AI (edytowane)";
       variant = "outline";
       icon = <BrainIcon className="h-3 w-3 mr-1" />;
       break;
-    case 'manual':
+    case "manual":
     default:
       label = "Ręcznie";
       variant = "default";
       icon = <UserIcon className="h-3 w-3 mr-1" />;
       break;
   }
-  
+
   return (
     <Badge variant={variant} className="inline-flex items-center">
       {icon}
@@ -124,12 +110,7 @@ export function FlashcardsTable({ flashcards, onEdit, onDelete }: FlashcardsTabl
                 </TableCell>
                 <TableCell className="text-right w-[10%] p-3 align-top">
                   <div className="flex justify-end space-x-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onEdit(flashcard)}
-                      aria-label="Edytuj fiszkę"
-                    >
+                    <Button variant="ghost" size="icon" onClick={() => onEdit(flashcard)} aria-label="Edytuj fiszkę">
                       <PencilIcon className="h-4 w-4" />
                     </Button>
                     <Button
@@ -155,4 +136,4 @@ export function FlashcardsTable({ flashcards, onEdit, onDelete }: FlashcardsTabl
       </div>
     </div>
   );
-} 
+}

@@ -1,61 +1,54 @@
-import type { APIRoute } from 'astro';
-import { FlashcardService } from '../../../lib/services/flashcard.service';
-import { flashcardsSearchSchema, flashcardsCreateSchema } from '../../../lib/schemas/flashcard.schema';
-import type { 
-  FlashcardsCreateCommand,
-  FlashcardsCreateResponseDto,
-  FlashcardsListResponseDto,
-  ValidationErrorDto
-} from '../../../types';
-import { supabaseClient } from '../../../db/supabase.client';
-
+import type { APIRoute } from "astro";
+import { FlashcardService } from "../../../lib/services/flashcard.service";
+import { flashcardsSearchSchema, flashcardsCreateSchema } from "../../../lib/schemas/flashcard.schema";
+import type { FlashcardsCreateCommand, ValidationErrorDto } from "../../../types";
 export const prerender = false;
 
 /**
  * GET /api/flashcards
  * List flashcards with pagination and search capabilities
  */
-export const GET: APIRoute = async ({ request, url, locals }) => {
+export const GET: APIRoute = async ({ url, locals }) => {
   try {
     // Sprawdzenie autoryzacji
     if (!locals.user) {
       return new Response(
         JSON.stringify({
-          error: 'Unauthorized',
-          message: 'You must be logged in to access this resource'
+          error: "Unauthorized",
+          message: "You must be logged in to access this resource",
         }),
-        { 
+        {
           status: 401,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { "Content-Type": "application/json" },
         }
       );
     }
 
     // Get search parameters from URL
     const searchParams = {
-      page: url.searchParams.get('page') ? Number(url.searchParams.get('page')) : undefined,
-      limit: url.searchParams.get('limit') ? Number(url.searchParams.get('limit')) : undefined,
-      search: url.searchParams.get('search') || undefined,
-      source: url.searchParams.get('source') as any || undefined
+      page: url.searchParams.get("page") ? Number(url.searchParams.get("page")) : undefined,
+      limit: url.searchParams.get("limit") ? Number(url.searchParams.get("limit")) : undefined,
+      search: url.searchParams.get("search") || undefined,
+      source: (url.searchParams.get("source") as any) || undefined,
     };
 
     // Validate search parameters
     const validationResult = flashcardsSearchSchema.safeParse(searchParams);
-    
+
     if (!validationResult.success) {
       const errorResponse: ValidationErrorDto = {
-        error: 'Validation Error',
-        message: 'Invalid search parameters',
-        validation_errors: validationResult.error.errors.map(err => ({
-          field: err.path.join('.'),
+        error: "Validation Error",
+        message: "Invalid search parameters",
+        validation_errors: validationResult.error.errors.map((err) => ({
+          field: err.path.join("."),
           message: err.message,
-          code: 'invalid_parameter'
-        }))
+          code: "invalid_parameter",
+        })),
       };
-      
-      return new Response(JSON.stringify(errorResponse), { 
+
+      return new Response(JSON.stringify(errorResponse), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -67,26 +60,26 @@ export const GET: APIRoute = async ({ request, url, locals }) => {
     // Get flashcards using the service - dodajemy userId do parametrów
     const result = await flashcardService.list({
       ...validationResult.data,
-      userId
+      userId,
     });
 
     // Return response
     return new Response(JSON.stringify(result), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error('Error fetching flashcards:', error);
-    
+    console.error("Error fetching flashcards:", error);
+
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'An unexpected error occurred while fetching flashcards',
-        details: error instanceof Error ? { message: error.message } : undefined
+        error: "Internal Server Error",
+        message: "An unexpected error occurred while fetching flashcards",
+        details: error instanceof Error ? { message: error.message } : undefined,
       }),
-      { 
+      {
         status: 500,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { "Content-Type": "application/json" },
       }
     );
   }
@@ -102,12 +95,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
     if (!locals.user) {
       return new Response(
         JSON.stringify({
-          error: 'Unauthorized',
-          message: 'You must be logged in to create flashcards'
+          error: "Unauthorized",
+          message: "You must be logged in to create flashcards",
         }),
-        { 
+        {
           status: 401,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { "Content-Type": "application/json" },
         }
       );
     }
@@ -118,23 +111,23 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const flashcardService = new FlashcardService(supabase);
 
     // Parse and validate the request body
-    const body = await request.json() as FlashcardsCreateCommand;
+    const body = (await request.json()) as FlashcardsCreateCommand;
     const validationResult = flashcardsCreateSchema.safeParse(body);
-    
+
     if (!validationResult.success) {
       const errorResponse: ValidationErrorDto = {
-        error: 'Validation Error',
-        message: 'Invalid flashcard data',
-        validation_errors: validationResult.error.errors.map(err => ({
-          field: err.path.join('.'),
+        error: "Validation Error",
+        message: "Invalid flashcard data",
+        validation_errors: validationResult.error.errors.map((err) => ({
+          field: err.path.join("."),
           message: err.message,
-          code: 'invalid_field'
-        }))
+          code: "invalid_field",
+        })),
       };
-      
-      return new Response(JSON.stringify(errorResponse), { 
+
+      return new Response(JSON.stringify(errorResponse), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { "Content-Type": "application/json" },
       });
     }
 
@@ -144,21 +137,21 @@ export const POST: APIRoute = async ({ request, locals }) => {
     // Return response
     return new Response(JSON.stringify(result), {
       status: 201,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error('Error creating flashcards:', error);
-    
+    console.error("Error creating flashcards:", error);
+
     return new Response(
       JSON.stringify({
-        error: 'Internal Server Error',
-        message: 'An unexpected error occurred while creating flashcards',
-        details: error instanceof Error ? { message: error.message } : undefined
+        error: "Internal Server Error",
+        message: "An unexpected error occurred while creating flashcards",
+        details: error instanceof Error ? { message: error.message } : undefined,
       }),
-      { 
+      {
         status: 500,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { "Content-Type": "application/json" },
       }
     );
   }
-}; 
+};

@@ -4,14 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
 import type { AuthResponseDTO } from "@/types";
 
@@ -23,10 +16,7 @@ const registerSchema = z
       .min(8, "Hasło musi mieć minimum 8 znaków")
       .regex(/[A-Z]/, "Hasło musi zawierać przynajmniej jedną wielką literę")
       .regex(/[0-9]/, "Hasło musi zawierać przynajmniej jedną cyfrę")
-      .regex(
-        /[^A-Za-z0-9]/,
-        "Hasło musi zawierać przynajmniej jeden znak specjalny"
-      ),
+      .regex(/[^A-Za-z0-9]/, "Hasło musi zawierać przynajmniej jeden znak specjalny"),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -60,11 +50,11 @@ export function RegisterForm() {
         body: JSON.stringify(data),
       });
 
-      const result = await response.json() as AuthResponseDTO;
+      const result = (await response.json()) as AuthResponseDTO;
 
       if (response.ok && result.success) {
         toast.success(result.message || "Zarejestrowano pomyślnie");
-        
+
         // Przekierowanie do strony z fiszkami
         if (result.redirectTo) {
           window.location.href = result.redirectTo;
@@ -93,12 +83,7 @@ export function RegisterForm() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input 
-                    placeholder="twoj@email.com" 
-                    type="email" 
-                    {...field} 
-                    disabled={isLoading}
-                  />
+                  <Input placeholder="twoj@email.com" type="email" {...field} disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -111,12 +96,7 @@ export function RegisterForm() {
               <FormItem>
                 <FormLabel>Hasło</FormLabel>
                 <FormControl>
-                  <Input 
-                    placeholder="••••••••" 
-                    type="password" 
-                    {...field} 
-                    disabled={isLoading}
-                  />
+                  <Input placeholder="••••••••" type="password" {...field} disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -129,12 +109,7 @@ export function RegisterForm() {
               <FormItem>
                 <FormLabel>Powtórz hasło</FormLabel>
                 <FormControl>
-                  <Input 
-                    placeholder="••••••••" 
-                    type="password" 
-                    {...field} 
-                    disabled={isLoading}
-                  />
+                  <Input placeholder="••••••••" type="password" {...field} disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -155,4 +130,4 @@ export function RegisterForm() {
       </div>
     </div>
   );
-} 
+}

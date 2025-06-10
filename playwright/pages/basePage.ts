@@ -1,5 +1,5 @@
-import { expect } from '@playwright/test';
-import type { Page, Locator } from '@playwright/test';
+import { expect } from "@playwright/test";
+import type { Page } from "@playwright/test";
 
 /**
  * Base page class that all page objects should extend
@@ -22,7 +22,7 @@ export class BasePage {
    * Wait for navigation to complete
    */
   async waitForNavigation(): Promise<void> {
-    await this.page.waitForLoadState('networkidle');
+    await this.page.waitForLoadState("networkidle");
   }
 
   /**
@@ -46,4 +46,4 @@ export class BasePage {
     // This requires @axe-core/playwright to be set up properly
     // Implementation will be added in a separate file
   }
-} 
+}

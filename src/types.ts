@@ -1,14 +1,14 @@
 // src/types.ts
-import type { Database } from './db/database.types';
+import type { Database } from "./db/database.types";
 
 // ------------------------------------------------------------------------------------
 // Aliases for base database row and insert/update types
 // ------------------------------------------------------------------------------------
-export type Flashcard = Database['public']['Tables']['flashcards']['Row'];
-export type FlashcardInsert = Database['public']['Tables']['flashcards']['Insert'];
-export type FlashcardUpdate = Database['public']['Tables']['flashcards']['Update'];
-export type Generation = Database['public']['Tables']['generations']['Row'];
-export type GenerationErrorLog = Database['public']['Tables']['generation_error_logs']['Row'];
+export type Flashcard = Database["public"]["Tables"]["flashcards"]["Row"];
+export type FlashcardInsert = Database["public"]["Tables"]["flashcards"]["Insert"];
+export type FlashcardUpdate = Database["public"]["Tables"]["flashcards"]["Update"];
+export type Generation = Database["public"]["Tables"]["generations"]["Row"];
+export type GenerationErrorLog = Database["public"]["Tables"]["generation_error_logs"]["Row"];
 
 // ------------------------------------------------------------------------------------
 // Auth DTOs
@@ -48,10 +48,7 @@ export interface AuthResponseDTO {
 // 1. Flashcard DTO
 //    Represents a flashcard as returned by the API endpoints
 // ------------------------------------------------------------------------------------
-export type FlashcardDto = Omit<
-  Flashcard,
-  'user_id'
->;
+export type FlashcardDto = Omit<Flashcard, "user_id">;
 
 // ------------------------------------------------------------------------------------
 // 2. Pagination DTO
@@ -81,11 +78,11 @@ export interface FlashcardDetailResponseDto {
 // ------------------------------------------------------------------------------------
 // 5. Flashcard Create DTO & Command Model (POST /flashcards)
 // ------------------------------------------------------------------------------------
-export type Source = Database['public']['Enums']['flashcard_source'];
+export type Source = Database["public"]["Enums"]["flashcard_source"];
 
 export interface FlashcardCreateDto {
   front: string; // max 200 znaków
-  back: string;  // max 500 znaków
+  back: string; // max 500 znaków
   source: Source;
   generation_id: number | null; // wymagane dla ai-*, null dla manual
 }
@@ -141,7 +138,7 @@ export interface SuggestionDto {
 // 11. Generation Create Response DTO (POST /generations)
 // ------------------------------------------------------------------------------------
 export interface GenerationCreateResponseDto {
-  generation: Omit<Generation, 'user_id'>;
+  generation: Omit<Generation, "user_id">;
   suggestions: SuggestionDto[];
 }
 
@@ -149,7 +146,7 @@ export interface GenerationCreateResponseDto {
 // 12. Generations List Response DTO (GET /generations)
 // ------------------------------------------------------------------------------------
 export interface GenerationsListResponseDto {
-  data: Omit<Generation, 'user_id'>[];
+  data: Omit<Generation, "user_id">[];
   meta: PaginationDto;
 }
 
@@ -159,7 +156,7 @@ export interface GenerationsListResponseDto {
 //     Dodano opcjonalne flashcards dla kompletności
 // ------------------------------------------------------------------------------------
 export interface GenerationDetailResponseDto {
-  generation: Omit<Generation, 'user_id'>;
+  generation: Omit<Generation, "user_id">;
   flashcards?: FlashcardDto[]; // Opcjonalne - dla pełnych detali
 }
 
@@ -182,10 +179,7 @@ export interface AcceptSuggestionsResponseDto {
 // 15. Generation Error Log DTO & List Response DTO (GET /generation-error-logs)
 //     Bez user_id zgodnie z planem API
 // ------------------------------------------------------------------------------------
-export type GenerationErrorLogDto = Omit<
-  GenerationErrorLog,
-  'user_id'
->;
+export type GenerationErrorLogDto = Omit<GenerationErrorLog, "user_id">;
 
 export interface GenerationErrorLogsListResponseDto {
   data: GenerationErrorLogDto[];
@@ -204,9 +198,9 @@ export interface ApiErrorDto {
 }
 
 export interface ValidationErrorDto extends ApiErrorDto {
-  validation_errors: Array<{
+  validation_errors: {
     field: string;
     message: string;
     code: string;
-  }>;
+  }[];
 }

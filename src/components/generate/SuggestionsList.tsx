@@ -1,6 +1,6 @@
-import { Button } from '../ui/button';
-import { SuggestionItem } from './SuggestionItem';
-import type { SuggestionViewModel } from './useFlashcardGenerator';
+import { Button } from "../ui/button";
+import { SuggestionItem } from "./SuggestionItem";
+import type { SuggestionViewModel } from "./useFlashcardGenerator";
 
 interface SuggestionsListProps {
   suggestions: SuggestionViewModel[];
@@ -17,12 +17,12 @@ export const SuggestionsList = ({
   onSuggestionChange,
   onSuggestionToggle,
   onSuggestionDelete,
-  isSaving
+  isSaving,
 }: SuggestionsListProps) => {
   // Calculate counts for the summary
   const totalCount = suggestions.length;
-  const selectedCount = suggestions.filter(s => s.isSelected).length;
-  
+  const selectedCount = suggestions.filter((s) => s.isSelected).length;
+
   // Check if Save button should be disabled
   const isSaveDisabled = selectedCount === 0 || isSaving;
 
@@ -30,25 +30,19 @@ export const SuggestionsList = ({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="text-sm">
-          <span className="font-medium">{selectedCount}</span> z{' '}
-          <span className="font-medium">{totalCount}</span> propozycji wybranych
+          <span className="font-medium">{selectedCount}</span> z <span className="font-medium">{totalCount}</span>{" "}
+          propozycji wybranych
         </div>
-        <Button 
-          onClick={onSave} 
-          disabled={isSaveDisabled}
-          className="min-w-[120px]"
-        >
-          {isSaving ? 'Zapisywanie...' : 'Zapisz wybrane'}
+        <Button onClick={onSave} disabled={isSaveDisabled} className="min-w-[120px]">
+          {isSaving ? "Zapisywanie..." : "Zapisz wybrane"}
         </Button>
       </div>
-      
+
       {totalCount === 0 ? (
-        <div className="text-center py-10 text-gray-500">
-          Brak dostępnych propozycji.
-        </div>
+        <div className="text-center py-10 text-gray-500">Brak dostępnych propozycji.</div>
       ) : (
         <ul className="space-y-4">
-          {suggestions.map(suggestion => (
+          {suggestions.map((suggestion) => (
             <SuggestionItem
               key={suggestion.id}
               suggestion={suggestion}
@@ -61,4 +55,4 @@ export const SuggestionsList = ({
       )}
     </div>
   );
-}; 
+};

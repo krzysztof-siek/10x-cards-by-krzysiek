@@ -1,269 +1,210 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
-import { SuggestionItem } from '../SuggestionItem';
-import type { SuggestionViewModel } from '../useFlashcardGenerator';
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { vi, describe, it, expect, beforeEach } from "vitest";
+import { SuggestionItem } from "../SuggestionItem";
+import type { SuggestionViewModel } from "../useFlashcardGenerator";
 
-describe('SuggestionItem', () => {
+describe("SuggestionItem", () => {
   const mockToggle = vi.fn();
   const mockDelete = vi.fn();
   const mockUpdate = vi.fn();
-  
+
   const mockSuggestion: SuggestionViewModel = {
-    id: 'test-id-123',
-    front: 'Test question',
-    back: 'Test answer',
+    id: "test-id-123",
+    front: "Test question",
+    back: "Test answer",
     isSelected: true,
     isEdited: false,
-    originalFront: 'Test question',
-    originalBack: 'Test answer'
+    originalFront: "Test question",
+    originalBack: "Test answer",
   };
-  
-  const mockEditedSuggestion: SuggestionViewModel = {
-    ...mockSuggestion,
-    isEdited: true,
-    front: 'Edited question',
-    back: 'Edited answer',
-    originalFront: 'Test question',
-    originalBack: 'Test answer'
-  };
-  
+
   beforeEach(() => {
     vi.resetAllMocks();
   });
-  
-  it('renders the suggestion correctly', () => {
+
+  it("renders the suggestion correctly", () => {
     render(
-      <SuggestionItem 
-        suggestion={mockSuggestion}
-        onToggle={mockToggle}
-        onDelete={mockDelete}
-        onUpdate={mockUpdate}
-      />
+      <SuggestionItem suggestion={mockSuggestion} onToggle={mockToggle} onDelete={mockDelete} onUpdate={mockUpdate} />
     );
-    
+
     // Check for content
-    expect(screen.getByText('Test question')).toBeInTheDocument();
-    expect(screen.getByText('Test answer')).toBeInTheDocument();
-    
+    expect(screen.getByText("Test question")).toBeInTheDocument();
+    expect(screen.getByText("Test answer")).toBeInTheDocument();
+
     // Check for edit and delete buttons
-    expect(screen.getByRole('button', { name: /edytuj/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /usuń/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /edytuj/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /usuń/i })).toBeInTheDocument();
   });
-  
+
   it('shows "Edytowane" badge when suggestion is edited', () => {
     const editedSuggestion = {
       ...mockSuggestion,
       isEdited: true,
-      front: 'Edited question',
-      back: 'Edited answer'
+      front: "Edited question",
+      back: "Edited answer",
     };
-    
+
     render(
-      <SuggestionItem 
-        suggestion={editedSuggestion}
-        onToggle={mockToggle}
-        onDelete={mockDelete}
-        onUpdate={mockUpdate}
-      />
+      <SuggestionItem suggestion={editedSuggestion} onToggle={mockToggle} onDelete={mockDelete} onUpdate={mockUpdate} />
     );
-    
-    expect(screen.getByText('Edytowane')).toBeInTheDocument();
+
+    expect(screen.getByText("Edytowane")).toBeInTheDocument();
   });
-  
-  it('calls onToggle when checkbox is clicked', async () => {
+
+  it("calls onToggle when checkbox is clicked", async () => {
     render(
-      <SuggestionItem 
-        suggestion={mockSuggestion}
-        onToggle={mockToggle}
-        onDelete={mockDelete}
-        onUpdate={mockUpdate}
-      />
+      <SuggestionItem suggestion={mockSuggestion} onToggle={mockToggle} onDelete={mockDelete} onUpdate={mockUpdate} />
     );
-    
-    const checkbox = screen.getByRole('checkbox');
+
+    const checkbox = screen.getByRole("checkbox");
     await userEvent.click(checkbox);
-    
-    expect(mockToggle).toHaveBeenCalledWith('test-id-123');
+
+    expect(mockToggle).toHaveBeenCalledWith("test-id-123");
   });
-  
-  it('calls onDelete when delete button is clicked', async () => {
+
+  it("calls onDelete when delete button is clicked", async () => {
     render(
-      <SuggestionItem 
-        suggestion={mockSuggestion}
-        onToggle={mockToggle}
-        onDelete={mockDelete}
-        onUpdate={mockUpdate}
-      />
+      <SuggestionItem suggestion={mockSuggestion} onToggle={mockToggle} onDelete={mockDelete} onUpdate={mockUpdate} />
     );
-    
-    const deleteButton = screen.getByRole('button', { name: /usuń/i });
+
+    const deleteButton = screen.getByRole("button", { name: /usuń/i });
     await userEvent.click(deleteButton);
-    
-    expect(mockDelete).toHaveBeenCalledWith('test-id-123');
+
+    expect(mockDelete).toHaveBeenCalledWith("test-id-123");
   });
-  
-  it('enters edit mode when edit button is clicked', async () => {
+
+  it("enters edit mode when edit button is clicked", async () => {
     render(
-      <SuggestionItem 
-        suggestion={mockSuggestion}
-        onToggle={mockToggle}
-        onDelete={mockDelete}
-        onUpdate={mockUpdate}
-      />
+      <SuggestionItem suggestion={mockSuggestion} onToggle={mockToggle} onDelete={mockDelete} onUpdate={mockUpdate} />
     );
-    
+
     // Initial state should show the text, not input fields
-    expect(screen.getByText('Test question')).toBeInTheDocument();
-    expect(screen.getByText('Test answer')).toBeInTheDocument();
-    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
-    
+    expect(screen.getByText("Test question")).toBeInTheDocument();
+    expect(screen.getByText("Test answer")).toBeInTheDocument();
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+
     // Click the edit button
-    const editButton = screen.getByRole('button', { name: /edytuj/i });
+    const editButton = screen.getByRole("button", { name: /edytuj/i });
     await userEvent.click(editButton);
-    
+
     // Edit mode should show input fields
-    expect(screen.queryByText('Test question')).not.toBeInTheDocument();
-    expect(screen.queryByText('Test answer')).not.toBeInTheDocument();
-    expect(screen.getAllByRole('textbox').length).toBe(2);
+    expect(screen.queryByText("Test question")).not.toBeInTheDocument();
+    expect(screen.queryByText("Test answer")).not.toBeInTheDocument();
+    expect(screen.getAllByRole("textbox").length).toBe(2);
   });
-  
-  it('shows original values in input fields when editing starts', async () => {
+
+  it("shows original values in input fields when editing starts", async () => {
     render(
-      <SuggestionItem 
-        suggestion={mockSuggestion}
-        onToggle={mockToggle}
-        onDelete={mockDelete}
-        onUpdate={mockUpdate}
-      />
+      <SuggestionItem suggestion={mockSuggestion} onToggle={mockToggle} onDelete={mockDelete} onUpdate={mockUpdate} />
     );
-    
+
     // Enter edit mode
-    const editButton = screen.getByRole('button', { name: /edytuj/i });
+    const editButton = screen.getByRole("button", { name: /edytuj/i });
     await userEvent.click(editButton);
-    
+
     // Get input fields
-    const inputFields = screen.getAllByRole('textbox');
+    const inputFields = screen.getAllByRole("textbox");
     const frontInput = inputFields[0]; // First input is for front
-    const backInput = inputFields[1];  // Second input is for back
-    
+    const backInput = inputFields[1]; // Second input is for back
+
     // Check if original values are shown in inputs
-    expect(frontInput).toHaveValue('Test question');
-    expect(backInput).toHaveValue('Test answer');
+    expect(frontInput).toHaveValue("Test question");
+    expect(backInput).toHaveValue("Test answer");
   });
-  
-  it('allows updating input values', async () => {
+
+  it("allows updating input values", async () => {
     render(
-      <SuggestionItem 
-        suggestion={mockSuggestion}
-        onToggle={mockToggle}
-        onDelete={mockDelete}
-        onUpdate={mockUpdate}
-      />
+      <SuggestionItem suggestion={mockSuggestion} onToggle={mockToggle} onDelete={mockDelete} onUpdate={mockUpdate} />
     );
-    
+
     // Enter edit mode
-    const editButton = screen.getByRole('button', { name: /edytuj/i });
+    const editButton = screen.getByRole("button", { name: /edytuj/i });
     await userEvent.click(editButton);
-    
+
     // Get input fields
-    const inputFields = screen.getAllByRole('textbox');
+    const inputFields = screen.getAllByRole("textbox");
     const frontInput = inputFields[0]; // First input is for front
-    const backInput = inputFields[1];  // Second input is for back
-    
+    const backInput = inputFields[1]; // Second input is for back
+
     // Clear and type new values
     await userEvent.clear(frontInput);
-    await userEvent.type(frontInput, 'New question');
+    await userEvent.type(frontInput, "New question");
     await userEvent.clear(backInput);
-    await userEvent.type(backInput, 'New answer');
-    
+    await userEvent.type(backInput, "New answer");
+
     // Check if input values were updated
-    expect(frontInput).toHaveValue('New question');
-    expect(backInput).toHaveValue('New answer');
+    expect(frontInput).toHaveValue("New question");
+    expect(backInput).toHaveValue("New answer");
   });
-  
-  it('calls onUpdate with new values when Save Changes is clicked', async () => {
+
+  it("calls onUpdate with new values when Save Changes is clicked", async () => {
     render(
-      <SuggestionItem 
-        suggestion={mockSuggestion}
-        onToggle={mockToggle}
-        onDelete={mockDelete}
-        onUpdate={mockUpdate}
-      />
+      <SuggestionItem suggestion={mockSuggestion} onToggle={mockToggle} onDelete={mockDelete} onUpdate={mockUpdate} />
     );
-    
+
     // Enter edit mode
-    const editButton = screen.getByRole('button', { name: /edytuj/i });
+    const editButton = screen.getByRole("button", { name: /edytuj/i });
     await userEvent.click(editButton);
-    
+
     // Get input fields
-    const inputFields = screen.getAllByRole('textbox');
+    const inputFields = screen.getAllByRole("textbox");
     const frontInput = inputFields[0];
     const backInput = inputFields[1];
-    
+
     // Update input values
     await userEvent.clear(frontInput);
-    await userEvent.type(frontInput, 'New question');
+    await userEvent.type(frontInput, "New question");
     await userEvent.clear(backInput);
-    await userEvent.type(backInput, 'New answer');
-    
+    await userEvent.type(backInput, "New answer");
+
     // Click Save Changes
-    const saveButton = screen.getByRole('button', { name: /zapisz zmiany/i });
+    const saveButton = screen.getByRole("button", { name: /zapisz zmiany/i });
     await userEvent.click(saveButton);
-    
+
     // Verify onUpdate was called with correct parameters
-    expect(mockUpdate).toHaveBeenCalledWith('test-id-123', 'New question', 'New answer');
-    
+    expect(mockUpdate).toHaveBeenCalledWith("test-id-123", "New question", "New answer");
+
     // Should exit edit mode
-    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
   });
-  
-  it('discards changes when Cancel is clicked', async () => {
+
+  it("discards changes when Cancel is clicked", async () => {
     render(
-      <SuggestionItem 
-        suggestion={mockSuggestion}
-        onToggle={mockToggle}
-        onDelete={mockDelete}
-        onUpdate={mockUpdate}
-      />
+      <SuggestionItem suggestion={mockSuggestion} onToggle={mockToggle} onDelete={mockDelete} onUpdate={mockUpdate} />
     );
-    
+
     // Enter edit mode
-    const editButton = screen.getByRole('button', { name: /edytuj/i });
+    const editButton = screen.getByRole("button", { name: /edytuj/i });
     await userEvent.click(editButton);
-    
+
     // Get input fields and update them
-    const inputFields = screen.getAllByRole('textbox');
+    const inputFields = screen.getAllByRole("textbox");
     const frontInput = inputFields[0];
     const backInput = inputFields[1];
-    
+
     await userEvent.clear(frontInput);
-    await userEvent.type(frontInput, 'Discarded question');
+    await userEvent.type(frontInput, "Discarded question");
     await userEvent.clear(backInput);
-    await userEvent.type(backInput, 'Discarded answer');
-    
+    await userEvent.type(backInput, "Discarded answer");
+
     // Click Cancel
-    const cancelButton = screen.getByRole('button', { name: /anuluj/i });
+    const cancelButton = screen.getByRole("button", { name: /anuluj/i });
     await userEvent.click(cancelButton);
-    
+
     // Verify onUpdate was NOT called
     expect(mockUpdate).not.toHaveBeenCalled();
-    
+
     // Should exit edit mode and display original values
-    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
-    expect(screen.getByText('Test question')).toBeInTheDocument();
-    expect(screen.getByText('Test answer')).toBeInTheDocument();
+    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+    expect(screen.getByText("Test question")).toBeInTheDocument();
+    expect(screen.getByText("Test answer")).toBeInTheDocument();
   });
-  
-  it('should match snapshot', () => {
+
+  it("should match snapshot", () => {
     const { container } = render(
-      <SuggestionItem 
-        suggestion={mockSuggestion}
-        onToggle={mockToggle}
-        onDelete={mockDelete}
-        onUpdate={mockUpdate}
-      />
+      <SuggestionItem suggestion={mockSuggestion} onToggle={mockToggle} onDelete={mockDelete} onUpdate={mockUpdate} />
     );
     expect(container).toMatchInlineSnapshot(`
       <div>
@@ -364,4 +305,4 @@ describe('SuggestionItem', () => {
       </div>
     `);
   });
-}); 
+});

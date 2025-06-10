@@ -9,18 +9,14 @@ interface FlashcardsHeaderProps {
   onAddFlashcard: () => void;
 }
 
-export function FlashcardsHeader({
-  searchQuery,
-  onSearchChange,
-  onAddFlashcard,
-}: FlashcardsHeaderProps) {
+export function FlashcardsHeader({ searchQuery, onSearchChange, onAddFlashcard }: FlashcardsHeaderProps) {
   const [inputValue, setInputValue] = useState(searchQuery);
-  
+
   // Reset input value when searchQuery prop changes (e.g. when filters are reset)
   useEffect(() => {
     setInputValue(searchQuery);
   }, [searchQuery]);
-  
+
   // Debounce search input
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -28,10 +24,10 @@ export function FlashcardsHeader({
         onSearchChange(inputValue);
       }
     }, 300);
-    
+
     return () => clearTimeout(timer);
   }, [inputValue, onSearchChange, searchQuery]);
-  
+
   return (
     <div className="mb-8 flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
       <div className="relative flex-grow max-w-md">
@@ -50,4 +46,4 @@ export function FlashcardsHeader({
       </Button>
     </div>
   );
-} 
+}

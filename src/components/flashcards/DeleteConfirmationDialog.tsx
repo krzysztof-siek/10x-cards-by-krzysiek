@@ -25,7 +25,7 @@ export function DeleteConfirmationDialog({
   itemName,
 }: DeleteConfirmationDialogProps) {
   const title = itemType === "flashcard" ? "Usuń fiszkę" : "Usuń kolekcję";
-  
+
   const description =
     itemType === "flashcard"
       ? "Czy na pewno chcesz usunąć tę fiszkę? Tej operacji nie można cofnąć."
@@ -47,11 +47,7 @@ export function DeleteConfirmationDialog({
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
-        {itemName && (
-          <div className="my-2 rounded-md bg-muted p-3 text-center font-medium">
-            {itemName}
-          </div>
-        )}
+        {itemName && <div className="my-2 rounded-md bg-muted p-3 text-center font-medium">{itemName}</div>}
 
         <DialogFooter className="gap-2 sm:gap-0">
           <Button variant="outline" onClick={onClose}>
@@ -64,4 +60,4 @@ export function DeleteConfirmationDialog({
       </DialogContent>
     </Dialog>
   );
-} 
+}

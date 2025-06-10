@@ -35,4 +35,4 @@ export function Topbar({ user }: TopbarProps) {
       </div>
     </div>
   );
-} 
+}

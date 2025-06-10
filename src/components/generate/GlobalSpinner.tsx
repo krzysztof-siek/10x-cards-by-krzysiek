@@ -8,4 +8,4 @@ export const GlobalSpinner = () => {
       </div>
     </div>
   );
-}; 
+};

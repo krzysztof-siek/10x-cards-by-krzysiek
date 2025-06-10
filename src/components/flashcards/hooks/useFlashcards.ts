@@ -1,10 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import type { 
-  FlashcardDto, 
-  FlashcardCreateDto, 
-  FlashcardUpdateDto,
-  FlashcardsListResponseDto
-} from "../../../types";
+import type { FlashcardDto, FlashcardCreateDto, FlashcardUpdateDto, FlashcardsListResponseDto } from "../../../types";
 
 // Custom view model for frontend use
 export interface FlashcardViewModel extends FlashcardDto {
@@ -51,62 +46,65 @@ export function useFlashcards() {
   });
 
   // Load flashcards from API
-  const loadFlashcards = useCallback(async (reset = true) => {
-    if (reset) {
-      setIsLoading(true);
-    } else {
-      setIsLoadingMore(true);
-    }
-    setError(null);
-    
-    try {
-      // Build query params
-      const queryParams = new URLSearchParams();
-      queryParams.append("page", filters.page.toString());
-      queryParams.append("limit", filters.limit.toString());
-      
-      if (filters.search) {
-        queryParams.append("search", filters.search);
-      }
-      
-      const response = await fetch(`/api/flashcards?${queryParams.toString()}`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error ${response.status}`);
-      }
-      
-      const data: FlashcardsListResponseDto = await response.json();
-      
+  const loadFlashcards = useCallback(
+    async (reset = true) => {
       if (reset) {
-        setFlashcards(data.data);
+        setIsLoading(true);
       } else {
-        setFlashcards((prev) => [...prev, ...data.data]);
+        setIsLoadingMore(true);
       }
-      
-      setPagination(data.meta);
-      
-      // Determine if there are more items to load
-      setHasMore(data.meta.page * data.meta.limit < data.meta.total);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Wystąpił nieznany błąd");
-    } finally {
-      if (reset) {
-        setIsLoading(false);
-      } else {
-        setIsLoadingMore(false);
+      setError(null);
+
+      try {
+        // Build query params
+        const queryParams = new URLSearchParams();
+        queryParams.append("page", filters.page.toString());
+        queryParams.append("limit", filters.limit.toString());
+
+        if (filters.search) {
+          queryParams.append("search", filters.search);
+        }
+
+        const response = await fetch(`/api/flashcards?${queryParams.toString()}`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error ${response.status}`);
+        }
+
+        const data: FlashcardsListResponseDto = await response.json();
+
+        if (reset) {
+          setFlashcards(data.data);
+        } else {
+          setFlashcards((prev) => [...prev, ...data.data]);
+        }
+
+        setPagination(data.meta);
+
+        // Determine if there are more items to load
+        setHasMore(data.meta.page * data.meta.limit < data.meta.total);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Wystąpił nieznany błąd");
+      } finally {
+        if (reset) {
+          setIsLoading(false);
+        } else {
+          setIsLoadingMore(false);
+        }
       }
-    }
-  }, [filters]);
+    },
+    [filters]
+  );
 
   // Load more flashcards
   const loadMore = useCallback(() => {
     if (isLoadingMore || !hasMore) return;
-    
+
     setFilters((prev) => ({
       ...prev,
       page: prev.page + 1,
     }));
-    
+
     loadFlashcards(false);
   }, [isLoadingMore, hasMore, loadFlashcards]);
 
@@ -188,16 +186,17 @@ export function useFlashcards() {
   const updateFlashcard = useCallback(
     async (data: FlashcardUpdateDto) => {
       if (!dialogState.flashcardToEdit) return;
-      
+
       try {
         // Jeśli edytujemy fiszkę, która była stworzona przez AI, zmień jej typ na ai-edited
-        let updatedData = { ...data };
-        const isAiSource = dialogState.flashcardToEdit.source === 'ai-full' || dialogState.flashcardToEdit.source === 'ai-edited';
-        
+        const updatedData = { ...data };
+        const isAiSource =
+          dialogState.flashcardToEdit.source === "ai-full" || dialogState.flashcardToEdit.source === "ai-edited";
+
         if (isAiSource) {
-          updatedData.source = 'ai-edited';
+          updatedData.source = "ai-edited";
         }
-        
+
         const response = await fetch(`/api/flashcards/${dialogState.flashcardToEdit.id}`, {
           method: "PUT",
           headers: {
@@ -215,7 +214,7 @@ export function useFlashcards() {
         setFlashcards((current) =>
           current.map((f) => (f.id === dialogState.flashcardToEdit?.id ? responseData.flashcard : f))
         );
-        
+
         closeDialog();
       } catch (err) {
         setError(err instanceof Error ? err.message : "Wystąpił błąd podczas aktualizacji fiszki");
@@ -228,10 +227,8 @@ export function useFlashcards() {
     async (id: number) => {
       try {
         // Optimistic UI update
-        setFlashcards((current) =>
-          current.map((f) => (f.id === id ? { ...f, isDeleting: true } : f))
-        );
-        
+        setFlashcards((current) => current.map((f) => (f.id === id ? { ...f, isDeleting: true } : f)));
+
         const response = await fetch(`/api/flashcards/${id}`, {
           method: "DELETE",
         });
@@ -243,18 +240,16 @@ export function useFlashcards() {
         // If successful, remove from list
         setFlashcards((current) => current.filter((f) => f.id !== id));
         closeDialog();
-        
+
         // Update total count
         setPagination((prev) => ({
           ...prev,
-          total: Math.max(0, prev.total - 1)
+          total: Math.max(0, prev.total - 1),
         }));
       } catch (err) {
         setError(err instanceof Error ? err.message : "Wystąpił błąd podczas usuwania fiszki");
         // Reset deleting state
-        setFlashcards((current) =>
-          current.map((f) => (f.id === id ? { ...f, isDeleting: false } : f))
-        );
+        setFlashcards((current) => current.map((f) => (f.id === id ? { ...f, isDeleting: false } : f)));
       }
     },
     [closeDialog]
@@ -285,4 +280,4 @@ export function useFlashcards() {
       closeDialog,
     },
   };
-} 
+}

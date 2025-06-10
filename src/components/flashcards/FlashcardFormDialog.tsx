@@ -2,22 +2,8 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -27,14 +13,8 @@ import type { FlashcardViewModel } from "./hooks/useFlashcards";
 
 // Validation schema
 const flashcardSchema = z.object({
-  front: z
-    .string()
-    .min(1, "Przód fiszki jest wymagany")
-    .max(200, "Przód fiszki może mieć maksymalnie 200 znaków"),
-  back: z
-    .string()
-    .min(1, "Tył fiszki jest wymagany")
-    .max(500, "Tył fiszki może mieć maksymalnie 500 znaków"),
+  front: z.string().min(1, "Przód fiszki jest wymagany").max(200, "Przód fiszki może mieć maksymalnie 200 znaków"),
+  back: z.string().min(1, "Tył fiszki jest wymagany").max(500, "Tył fiszki może mieć maksymalnie 500 znaków"),
   source: z.string() as z.ZodType<Source>,
   generation_id: z.number().nullable(),
 });
@@ -49,16 +29,10 @@ interface FlashcardFormDialogProps {
   error?: string | null;
 }
 
-export function FlashcardFormDialog({
-  isOpen,
-  onClose,
-  onSave,
-  flashcardToEdit,
-  error,
-}: FlashcardFormDialogProps) {
+export function FlashcardFormDialog({ isOpen, onClose, onSave, flashcardToEdit, error }: FlashcardFormDialogProps) {
   const isEditing = !!flashcardToEdit;
   const title = isEditing ? "Edytuj fiszkę" : "Dodaj fiszkę";
-  const isAiSource = flashcardToEdit?.source === 'ai-full' || flashcardToEdit?.source === 'ai-edited';
+  const isAiSource = flashcardToEdit?.source === "ai-full" || flashcardToEdit?.source === "ai-edited";
 
   // Form with zod validation
   const form = useForm<FlashcardFormValues>({
@@ -95,14 +69,14 @@ export function FlashcardFormDialog({
   const onSubmit = (values: FlashcardFormValues) => {
     // If creating a new flashcard, ensure source is 'manual' and generation_id is null
     if (!isEditing) {
-      values.source = 'manual';
+      values.source = "manual";
       values.generation_id = null;
     }
     // If editing an AI-generated card, change source to 'ai-edited'
     else if (isAiSource) {
-      values.source = 'ai-edited';
+      values.source = "ai-edited";
     }
-    
+
     onSave(values);
   };
 
@@ -113,6 +87,7 @@ export function FlashcardFormDialog({
           <DialogTitle>{title}</DialogTitle>
           {isAiSource && (
             <div className="text-sm text-muted-foreground mt-1">
+              {/* eslint-disable-next-line react/no-unescaped-entities */}
               Edycja fiszki wygenerowanej przez AI spowoduje zmianę jej typu na "AI (edytowane)".
             </div>
           )}
@@ -126,11 +101,7 @@ export function FlashcardFormDialog({
                 <FormItem>
                   <FormLabel>Przód</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Wpisz treść przodu fiszki"
-                      className="min-h-24"
-                      {...field}
-                    />
+                    <Textarea placeholder="Wpisz treść przodu fiszki" className="min-h-24" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -143,11 +114,7 @@ export function FlashcardFormDialog({
                 <FormItem>
                   <FormLabel>Tył</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Wpisz treść tyłu fiszki"
-                      className="min-h-24"
-                      {...field}
-                    />
+                    <Textarea placeholder="Wpisz treść tyłu fiszki" className="min-h-24" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -170,4 +137,4 @@ export function FlashcardFormDialog({
       </DialogContent>
     </Dialog>
   );
-} 
+}

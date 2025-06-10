@@ -4,14 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "sonner";
 import type { AuthResponseDTO } from "@/types";
 
@@ -45,11 +38,11 @@ export function LoginForm() {
         body: JSON.stringify(data),
       });
 
-      const result = await response.json() as AuthResponseDTO;
+      const result = (await response.json()) as AuthResponseDTO;
 
       if (response.ok && result.success) {
         toast.success("Zalogowano pomyślnie");
-        
+
         // Przekierowanie do strony z listą fiszek
         if (result.redirectTo) {
           window.location.href = result.redirectTo;
@@ -78,12 +71,7 @@ export function LoginForm() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input 
-                    placeholder="twoj@email.com" 
-                    type="email" 
-                    {...field} 
-                    disabled={isLoading}
-                  />
+                  <Input placeholder="twoj@email.com" type="email" {...field} disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -96,22 +84,14 @@ export function LoginForm() {
               <FormItem>
                 <FormLabel>Hasło</FormLabel>
                 <FormControl>
-                  <Input 
-                    placeholder="••••••••" 
-                    type="password" 
-                    {...field} 
-                    disabled={isLoading}
-                  />
+                  <Input placeholder="••••••••" type="password" {...field} disabled={isLoading} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <div className="flex justify-between items-center">
-            <a
-              href="/auth/reset-password"
-              className="text-sm text-primary hover:underline"
-            >
+            <a href="/auth/reset-password" className="text-sm text-primary hover:underline">
               Zapomniałeś hasła?
             </a>
           </div>
@@ -130,4 +110,4 @@ export function LoginForm() {
       </div>
     </div>
   );
-} 
+}

@@ -1,45 +1,44 @@
-import { useEffect } from 'react';
-import { SourceTextForm } from './SourceTextForm';
-import { SuggestionsList } from './SuggestionsList';
-import { GlobalSpinner } from './GlobalSpinner';
-import { useFlashcardGenerator } from './useFlashcardGenerator';
-import type { GenerateFlashcardsCommand } from '../../types';
-import { toast } from 'sonner';
+import { useEffect } from "react";
+import { SourceTextForm } from "./SourceTextForm";
+import { SuggestionsList } from "./SuggestionsList";
+import { GlobalSpinner } from "./GlobalSpinner";
+import { useFlashcardGenerator } from "./useFlashcardGenerator";
+import type { GenerateFlashcardsCommand } from "../../types";
+import { toast } from "sonner";
 
 export const GenerateFlashcardsView = () => {
-  const { 
-    suggestions, 
-    isLoading, 
-    isSaving, 
+  const {
+    suggestions,
+    isLoading,
+    isSaving,
     error,
-    generateSuggestions, 
-    saveSuggestions, 
+    generateSuggestions,
+    saveSuggestions,
     updateSuggestion,
     toggleSuggestion,
     deleteSuggestion,
-    getSelectedCount
   } = useFlashcardGenerator();
-  
+
   // Handle form submission to generate flashcards
   const handleGenerateSubmit = async (data: GenerateFlashcardsCommand) => {
     try {
       await generateSuggestions(data);
-    } catch (error) {
+    } catch {
       // Error is already handled in the hook
     }
   };
-  
+
   // Handle saving selected flashcards
   const handleSaveSuggestions = async () => {
     try {
       const result = await saveSuggestions();
-      
+
       if (result) {
         toast.success("Sukces!", {
-          description: `${result.flashcards.length} fiszek zostało zapisanych do Twojej kolekcji.`
+          description: `${result.flashcards.length} fiszek zostało zapisanych do Twojej kolekcji.`,
         });
       }
-    } catch (error) {
+    } catch {
       // Error is already handled in the hook
     }
   };
@@ -48,7 +47,7 @@ export const GenerateFlashcardsView = () => {
   useEffect(() => {
     if (error) {
       toast.error("Błąd", {
-        description: error.message || "Wystąpił nieoczekiwany błąd"
+        description: error.message || "Wystąpił nieoczekiwany błąd",
       });
     }
   }, [error]);
@@ -59,18 +58,15 @@ export const GenerateFlashcardsView = () => {
         <div>
           <h1 className="text-3xl font-bold mb-2">Generuj fiszki z pomocą AI</h1>
           <p className="text-gray-600">
-            Wklej swój tekst poniżej, aby wygenerować propozycje fiszek przy pomocy sztucznej inteligencji. 
-            Możesz przeglądać, edytować i wybierać, które z nich chcesz zapisać do swojej kolekcji.
+            Wklej swój tekst poniżej, aby wygenerować propozycje fiszek przy pomocy sztucznej inteligencji. Możesz
+            przeglądać, edytować i wybierać, które z nich chcesz zapisać do swojej kolekcji.
           </p>
         </div>
 
         {/* Show either the form or suggestions based on state */}
         {suggestions.length === 0 ? (
           <div className="bg-white p-6 rounded-lg border">
-            <SourceTextForm 
-              isLoading={isLoading} 
-              onSubmit={handleGenerateSubmit} 
-            />
+            <SourceTextForm isLoading={isLoading} onSubmit={handleGenerateSubmit} />
           </div>
         ) : (
           <div className="bg-white p-6 rounded-lg border">
@@ -90,4 +86,4 @@ export const GenerateFlashcardsView = () => {
       {isLoading && <GlobalSpinner />}
     </div>
   );
-}; 
+};

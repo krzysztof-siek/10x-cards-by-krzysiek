@@ -1,10 +1,13 @@
-import { supabaseClient } from '../../db/supabase.client';
-import type { AuthError, Session, User } from '@supabase/supabase-js';
+import { supabaseClient } from "../../db/supabase.client";
+import type { AuthError, Session, User } from "@supabase/supabase-js";
 
 class AuthService {
-  async register(email: string, password: string): Promise<{ 
-    user: User | null; 
-    session: Session | null; 
+  async register(
+    email: string,
+    password: string
+  ): Promise<{
+    user: User | null;
+    session: Session | null;
     error: AuthError | null;
   }> {
     try {
@@ -19,7 +22,7 @@ class AuthService {
         error,
       };
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error("Registration error:", error);
       return {
         user: null,
         session: null,
@@ -28,9 +31,12 @@ class AuthService {
     }
   }
 
-  async login(email: string, password: string): Promise<{ 
-    user: User | null; 
-    session: Session | null; 
+  async login(
+    email: string,
+    password: string
+  ): Promise<{
+    user: User | null;
+    session: Session | null;
     error: AuthError | null;
   }> {
     try {
@@ -45,7 +51,7 @@ class AuthService {
         error,
       };
     } catch (error) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       return {
         user: null,
         session: null,
@@ -59,13 +65,13 @@ class AuthService {
       const { error } = await supabaseClient.auth.signOut();
       return { error };
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
       return { error: error as AuthError };
     }
   }
 
-  async getSession(): Promise<{ 
-    session: Session | null; 
+  async getSession(): Promise<{
+    session: Session | null;
     error: AuthError | null;
   }> {
     try {
@@ -75,7 +81,7 @@ class AuthService {
         error,
       };
     } catch (error) {
-      console.error('Get session error:', error);
+      console.error("Get session error:", error);
       return {
         session: null,
         error: error as AuthError,
@@ -83,8 +89,8 @@ class AuthService {
     }
   }
 
-  async getUser(): Promise<{ 
-    user: User | null; 
+  async getUser(): Promise<{
+    user: User | null;
     error: AuthError | null;
   }> {
     try {
@@ -94,7 +100,7 @@ class AuthService {
         error,
       };
     } catch (error) {
-      console.error('Get user error:', error);
+      console.error("Get user error:", error);
       return {
         user: null,
         error: error as AuthError,
@@ -103,4 +109,4 @@ class AuthService {
   }
 }
 
-export const authService = new AuthService(); 
+export const authService = new AuthService();

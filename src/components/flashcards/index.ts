@@ -1,1 +1,1 @@
-export { FlashcardsView } from './FlashcardsView'; 
+export { FlashcardsView } from "./FlashcardsView";

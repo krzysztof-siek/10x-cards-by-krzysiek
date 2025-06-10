@@ -1,7 +1,7 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { GenerateFlashcardsView } from '../components/generate/GenerateFlashcardsView';
-import { Toaster } from '../components/ui/sonner';
+import Layout from "../layouts/Layout.astro";
+import { GenerateFlashcardsView } from "../components/generate/GenerateFlashcardsView";
+import { Toaster } from "../components/ui/sonner";
 
 // Mark this page as requiring server-side rendering for authentication
 export const prerender = false;
@@ -17,4 +17,4 @@ export const prerender = false;
   <h1 class="text-3xl font-bold mb-8 text-center">Generator fiszek</h1>
   <GenerateFlashcardsView client:load />
   <Toaster client:load />
-</Layout> 
+</Layout>

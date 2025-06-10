@@ -1,5 +1,5 @@
 interface RateLimitConfig {
-  windowMs: number;    // Time window in milliseconds
+  windowMs: number; // Time window in milliseconds
   maxRequests: number; // Maximum requests per window
 }
 
@@ -15,12 +15,12 @@ export class RateLimitService {
   constructor(config: RateLimitConfig) {
     this.store = new Map();
     this.config = config;
-    
+
     // Cleanup old entries every minute
     setInterval(() => this.cleanup(), 60000);
   }
 
-  async checkRateLimit(userId: string): Promise<{ 
+  async checkRateLimit(userId: string): Promise<{
     allowed: boolean;
     remaining: number;
     resetAt: number;
@@ -32,12 +32,12 @@ export class RateLimitService {
       // First request or window expired
       this.store.set(userId, {
         count: 1,
-        resetAt: now + this.config.windowMs
+        resetAt: now + this.config.windowMs,
       });
       return {
         allowed: true,
         remaining: this.config.maxRequests - 1,
-        resetAt: now + this.config.windowMs
+        resetAt: now + this.config.windowMs,
       };
     }
 
@@ -45,7 +45,7 @@ export class RateLimitService {
       return {
         allowed: false,
         remaining: 0,
-        resetAt: entry.resetAt
+        resetAt: entry.resetAt,
       };
     }
 
@@ -54,7 +54,7 @@ export class RateLimitService {
     return {
       allowed: true,
       remaining: this.config.maxRequests - entry.count,
-      resetAt: entry.resetAt
+      resetAt: entry.resetAt,
     };
   }
 
@@ -71,5 +71,5 @@ export class RateLimitService {
 // Create singleton instance with 10 requests per 10 minutes per user
 export const rateLimitService = new RateLimitService({
   windowMs: 10 * 60 * 1000, // 10 minutes
-  maxRequests: 10
-}); 
+  maxRequests: 10,
+});

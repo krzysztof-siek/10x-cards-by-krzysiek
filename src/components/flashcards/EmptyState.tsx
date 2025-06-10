@@ -21,4 +21,4 @@ export function EmptyState({ onAddFlashcard }: EmptyStateProps) {
       </Button>
     </div>
   );
-} 
+}

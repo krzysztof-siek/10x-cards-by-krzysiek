@@ -1,7 +1,7 @@
-import { afterEach, expect, vi } from 'vitest';
-import { cleanup } from '@testing-library/react';
-import * as matchers from '@testing-library/jest-dom/matchers';
-import '@testing-library/jest-dom';
+import { afterEach, expect, vi } from "vitest";
+import { cleanup } from "@testing-library/react";
+import * as matchers from "@testing-library/jest-dom/matchers";
+import "@testing-library/jest-dom";
 
 // Extend Vitest's expect with testing-library matchers
 expect.extend(matchers);
@@ -12,7 +12,7 @@ afterEach(() => {
 });
 
 // Mock browser APIs not available in jsdom if needed
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: vi.fn().mockImplementation((query: string) => ({
     matches: false,
@@ -31,4 +31,4 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),
-})); 
+}));

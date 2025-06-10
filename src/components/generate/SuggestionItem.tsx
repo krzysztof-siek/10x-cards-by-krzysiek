@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import type { ChangeEvent } from 'react';
-import { Checkbox } from '../ui/checkbox';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import type { SuggestionViewModel } from './useFlashcardGenerator';
+import { useState } from "react";
+import type { ChangeEvent } from "react";
+import { Checkbox } from "../ui/checkbox";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import type { SuggestionViewModel } from "./useFlashcardGenerator";
 
 interface SuggestionItemProps {
   suggestion: SuggestionViewModel;
@@ -12,12 +12,7 @@ interface SuggestionItemProps {
   onUpdate: (id: string, front: string, back: string) => void;
 }
 
-export const SuggestionItem = ({ 
-  suggestion, 
-  onToggle, 
-  onDelete, 
-  onUpdate 
-}: SuggestionItemProps) => {
+export const SuggestionItem = ({ suggestion, onToggle, onDelete, onUpdate }: SuggestionItemProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedFront, setEditedFront] = useState(suggestion.front);
   const [editedBack, setEditedBack] = useState(suggestion.back);
@@ -49,19 +44,13 @@ export const SuggestionItem = ({
     <li className="flex flex-col gap-3 p-4 border rounded-lg">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-2">
-          <Checkbox 
-            id={`suggestion-${suggestion.id}`}
-            checked={suggestion.isSelected}
-            onCheckedChange={handleToggle}
-          />
+          <Checkbox id={`suggestion-${suggestion.id}`} checked={suggestion.isSelected} onCheckedChange={handleToggle} />
           <label
             htmlFor={`suggestion-${suggestion.id}`}
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
             {suggestion.isEdited ? (
-              <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded ml-2">
-                Edytowane
-              </span>
+              <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded ml-2">Edytowane</span>
             ) : null}
           </label>
         </div>
@@ -119,4 +108,4 @@ export const SuggestionItem = ({
       </div>
     </li>
   );
-}; 
+};

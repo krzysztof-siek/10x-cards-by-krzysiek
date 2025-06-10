@@ -21,11 +21,11 @@ export function AuthStatus({ user }: AuthStatusProps) {
         },
       });
 
-      const result = await response.json() as AuthResponseDTO;
+      const result = (await response.json()) as AuthResponseDTO;
 
       if (response.ok && result.success) {
         toast.success("Wylogowano pomyślnie");
-        
+
         // Przekierowanie na stronę główną
         if (result.redirectTo) {
           window.location.href = result.redirectTo;
@@ -91,4 +91,4 @@ export function AuthStatus({ user }: AuthStatusProps) {
       </TooltipProvider>
     </div>
   );
-} 
+}

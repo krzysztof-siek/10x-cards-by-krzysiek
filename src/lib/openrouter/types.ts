@@ -1,6 +1,6 @@
 // Basic message structure for conversation
 export interface Message {
-  role: 'system' | 'user' | 'assistant';
+  role: "system" | "user" | "assistant";
   content: string;
 }
 
@@ -22,13 +22,13 @@ export interface StructuredCompletionOptions extends CompletionOptions {
 // Response structure from OpenRouter API
 export interface OpenRouterResponse {
   id: string;
-  choices: Array<{
+  choices: {
     message: {
       content: string;
     };
     index: number;
     finish_reason: string;
-  }>;
+  }[];
   model: string;
   object: string;
   usage: {
@@ -36,4 +36,4 @@ export interface OpenRouterResponse {
     completion_tokens: number;
     total_tokens: number;
   };
-} 
+}

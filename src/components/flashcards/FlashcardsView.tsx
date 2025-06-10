@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useFlashcards } from "./hooks/useFlashcards";
 import { FlashcardsHeader } from "./FlashcardsHeader";
 import { FlashcardsTable } from "./FlashcardsTable";
@@ -10,16 +9,7 @@ import { Loader2Icon } from "lucide-react";
 
 export function FlashcardsView() {
   const {
-    state: {
-      flashcards,
-      pagination,
-      filters,
-      isLoading,
-      isLoadingMore,
-      hasMore,
-      error,
-      dialogState,
-    },
+    state: { flashcards, pagination, filters, isLoading, isLoadingMore, hasMore, error, dialogState },
     actions: {
       loadFlashcards,
       loadMore,
@@ -40,7 +30,11 @@ export function FlashcardsView() {
         <div className="flex">
           <div className="flex-shrink-0">
             <svg className="h-5 w-5 text-destructive" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                clipRule="evenodd"
+              />
             </svg>
           </div>
           <div className="ml-3">
@@ -80,22 +74,13 @@ export function FlashcardsView() {
       ) : (
         <>
           <div className="shadow-sm">
-            <FlashcardsTable
-              flashcards={flashcards}
-              onEdit={openEditDialog}
-              onDelete={openDeleteDialog}
-            />
+            <FlashcardsTable flashcards={flashcards} onEdit={openEditDialog} onDelete={openDeleteDialog} />
           </div>
-          
+
           {/* Load More Button */}
           {hasMore && (
             <div className="mt-8 flex justify-center">
-              <Button
-                onClick={loadMore}
-                disabled={isLoadingMore}
-                variant="outline"
-                className="min-w-[200px] py-2"
-              >
+              <Button onClick={loadMore} disabled={isLoadingMore} variant="outline" className="min-w-[200px] py-2">
                 {isLoadingMore ? (
                   <>
                     <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
@@ -107,7 +92,7 @@ export function FlashcardsView() {
               </Button>
             </div>
           )}
-          
+
           {/* Flashcards summary */}
           <div className="mt-4 text-center text-sm text-muted-foreground">
             Wyświetlanie {flashcards.length} z {pagination.total} fiszek
@@ -136,4 +121,4 @@ export function FlashcardsView() {
       />
     </div>
   );
-} 
+}
