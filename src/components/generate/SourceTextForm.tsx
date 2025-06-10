@@ -32,7 +32,7 @@ export const SourceTextForm = ({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <Textarea
-          placeholder="Paste your text here (1,000-10,000 characters)..."
+          placeholder="Wklej swój tekst tutaj (1 000-10 000 znaków)..."
           value={sourceText}
           onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setSourceText(e.target.value)}
           rows={10}
@@ -42,16 +42,16 @@ export const SourceTextForm = ({
         
         <div className="flex justify-between text-sm mt-1">
           <div className={textLength > 0 && !isTextValid ? "text-red-500" : "text-gray-500"}>
-            {textLength} / {MAX_LENGTH} characters
+            {textLength} / {MAX_LENGTH} znaków
           </div>
           {textLength > 0 && textLength < MIN_LENGTH && (
             <div className="text-amber-600">
-              At least {MIN_LENGTH} characters required
+              Wymagane minimum {MIN_LENGTH} znaków
             </div>
           )}
           {textLength > MAX_LENGTH && (
             <div className="text-red-600">
-              Text is too long
+              Tekst jest zbyt długi
             </div>
           )}
         </div>
@@ -62,7 +62,7 @@ export const SourceTextForm = ({
         disabled={!isTextValid || isLoading}
         className="w-full"
       >
-        {isLoading ? 'Generating...' : 'Generate Flashcards'}
+        {isLoading ? 'Generowanie...' : 'Generuj fiszki'}
       </Button>
     </form>
   );

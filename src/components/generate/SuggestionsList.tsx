@@ -30,21 +30,21 @@ export const SuggestionsList = ({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="text-sm">
-          <span className="font-medium">{selectedCount}</span> of{' '}
-          <span className="font-medium">{totalCount}</span> suggestions selected
+          <span className="font-medium">{selectedCount}</span> z{' '}
+          <span className="font-medium">{totalCount}</span> propozycji wybranych
         </div>
         <Button 
           onClick={onSave} 
           disabled={isSaveDisabled}
           className="min-w-[120px]"
         >
-          {isSaving ? 'Saving...' : 'Save Selected'}
+          {isSaving ? 'Zapisywanie...' : 'Zapisz wybrane'}
         </Button>
       </div>
       
       {totalCount === 0 ? (
         <div className="text-center py-10 text-gray-500">
-          No suggestions available.
+          Brak dostępnych propozycji.
         </div>
       ) : (
         <ul className="space-y-4">

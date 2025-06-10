@@ -35,8 +35,8 @@ export const GenerateFlashcardsView = () => {
       const result = await saveSuggestions();
       
       if (result) {
-        toast.success("Success!", {
-          description: `${result.flashcards.length} flashcards have been saved to your collection.`
+        toast.success("Sukces!", {
+          description: `${result.flashcards.length} fiszek zostało zapisanych do Twojej kolekcji.`
         });
       }
     } catch (error) {
@@ -47,8 +47,8 @@ export const GenerateFlashcardsView = () => {
   // Show error notifications when errors occur
   useEffect(() => {
     if (error) {
-      toast.error("Error", {
-        description: error.message || "An unexpected error occurred"
+      toast.error("Błąd", {
+        description: error.message || "Wystąpił nieoczekiwany błąd"
       });
     }
   }, [error]);
@@ -57,10 +57,10 @@ export const GenerateFlashcardsView = () => {
     <div className="container mx-auto py-8 max-w-4xl">
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Generate Flashcards with AI</h1>
+          <h1 className="text-3xl font-bold mb-2">Generuj fiszki z pomocą AI</h1>
           <p className="text-gray-600">
-            Paste your text below to generate AI-powered flashcard suggestions. You can
-            review, edit, and select which ones to save to your collection.
+            Wklej swój tekst poniżej, aby wygenerować propozycje fiszek przy pomocy sztucznej inteligencji. 
+            Możesz przeglądać, edytować i wybierać, które z nich chcesz zapisać do swojej kolekcji.
           </p>
         </div>
 

@@ -60,7 +60,7 @@ export const SuggestionItem = ({
           >
             {suggestion.isEdited ? (
               <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded ml-2">
-                Edited
+                Edytowane
               </span>
             ) : null}
           </label>
@@ -69,19 +69,19 @@ export const SuggestionItem = ({
           {isEditing ? (
             <>
               <Button variant="outline" size="sm" onClick={handleCancelEdit}>
-                Cancel
+                Anuluj
               </Button>
               <Button size="sm" onClick={handleSaveClick}>
-                Save Changes
+                Zapisz zmiany
               </Button>
             </>
           ) : (
             <>
               <Button variant="outline" size="sm" onClick={handleEditClick}>
-                Edit
+                Edytuj
               </Button>
               <Button variant="destructive" size="sm" onClick={handleDelete}>
-                Delete
+                Usuń
               </Button>
             </>
           )}
@@ -90,7 +90,7 @@ export const SuggestionItem = ({
 
       <div className="grid gap-4">
         <div>
-          <div className="text-sm font-medium mb-1">Front side:</div>
+          <div className="text-sm font-medium mb-1">Przód:</div>
           {isEditing ? (
             <Input
               value={editedFront}
@@ -104,7 +104,7 @@ export const SuggestionItem = ({
         </div>
 
         <div>
-          <div className="text-sm font-medium mb-1">Back side:</div>
+          <div className="text-sm font-medium mb-1">Tył:</div>
           {isEditing ? (
             <Input
               value={editedBack}
