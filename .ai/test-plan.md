@@ -37,6 +37,14 @@ Szczegółowe cele:
     - Generowanie sugestii fiszek przez AI.
     - Dodawanie wygenerowanych fiszek do zestawu.
     - Obsługa stanów ładowania i błędów.
+- **Moduł ćwiczeń:**
+    - Wyświetlanie fiszek w trybie nauki.
+    - Walidacja odpowiedzi użytkownika.
+    - Wyświetlanie informacji zwrotnej (poprawna/niepoprawna odpowiedź).
+    - Kontrola postępu sesji ćwiczeniowej.
+    - Obsługa przejść między fiszkami.
+    - Porównywanie odpowiedzi z uwzględnieniem formatowania.
+    - Wyświetlanie statystyk sesji.
 - **API Backendowe:**
     - Testowanie każdego endpointu pod kątem poprawności działania, walidacji i obsługi błędów.
 

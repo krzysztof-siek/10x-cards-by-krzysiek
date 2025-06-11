@@ -236,3 +236,7 @@ export const usePractice = (options: UsePracticeOptions = {}) => {
     },
   };
 };
+
+// Eksportujemy compareAnswers jako właściwość dla testów
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(usePractice as any).__compareAnswers = compareAnswers;
