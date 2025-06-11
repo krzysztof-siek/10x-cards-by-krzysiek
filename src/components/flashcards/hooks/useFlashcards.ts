@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import type { FlashcardDto, FlashcardCreateDto, FlashcardUpdateDto, FlashcardsListResponseDto } from "../../../types";
 
 // Custom view model for frontend use
@@ -22,6 +22,8 @@ interface DialogState {
 }
 
 export function useFlashcards() {
+  // Ref do śledzenia pierwszego ładowania
+  const isInitialLoad = useRef(true);
   // State
   const [flashcards, setFlashcards] = useState<FlashcardViewModel[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -104,17 +106,34 @@ export function useFlashcards() {
       ...prev,
       page: prev.page + 1,
     }));
+  }, [isLoadingMore, hasMore]);
 
-    loadFlashcards(false);
-  }, [isLoadingMore, hasMore, loadFlashcards]);
+  // Obsługa zmiany filtrów
+  const handleSearchChange = useCallback(
+    (searchValue: string) => {
+      setFilters({
+        page: 1,
+        limit: filters.limit,
+        search: searchValue,
+      });
+    },
+    [filters.limit]
+  );
 
-  // Load data on mount and when search filter changes
+  // Load data on mount and when filters change
   useEffect(() => {
-    // Only reset and load when search changes
-    if (filters.page === 1) {
+    // Przy pierwszym renderze lub gdy zmienia się search, ładujemy dane
+    if (isInitialLoad.current) {
+      isInitialLoad.current = false;
       loadFlashcards(true);
+    } else if (filters.page === 1) {
+      // Jeśli resetujemy do strony 1 (np. przy zmianie search), ładujemy dane
+      loadFlashcards(true);
+    } else {
+      // Jeśli zmienił się numer strony na większy niż 1, ładujemy więcej
+      loadFlashcards(false);
     }
-  }, [filters.search, filters.page, loadFlashcards]);
+  }, [filters, loadFlashcards]);
 
   // Dialog actions
   const openCreateDialog = useCallback(() => {
@@ -274,6 +293,7 @@ export function useFlashcards() {
       updateFlashcard,
       deleteFlashcard,
       setFilters,
+      handleSearchChange,
       openCreateDialog,
       openEditDialog,
       openDeleteDialog,

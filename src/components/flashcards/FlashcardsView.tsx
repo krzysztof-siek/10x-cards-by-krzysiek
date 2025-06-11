@@ -63,7 +63,7 @@ export function FlashcardsView() {
   const handleCreateFlashcard = async (data: FlashcardCreateDto) => {
     await createFlashcard(data);
     toast.success("Sukces!", {
-      description: "Fiszka została dodana do Twojej kolekcji."
+      description: "Fiszka została dodana do Twojej kolekcji.",
     });
   };
 
@@ -71,7 +71,7 @@ export function FlashcardsView() {
   const handleUpdateFlashcard = async (data: FlashcardUpdateDto) => {
     await updateFlashcard(data);
     toast.success("Sukces!", {
-      description: "Fiszka została zaktualizowana."
+      description: "Fiszka została zaktualizowana.",
     });
   };
 
@@ -133,7 +133,7 @@ export function FlashcardsView() {
           if (dialogState.itemToDelete) {
             deleteFlashcard(dialogState.itemToDelete.id);
             toast.success("Sukces!", {
-              description: "Fiszka została usunięta."
+              description: "Fiszka została usunięta.",
             });
           }
         }}
