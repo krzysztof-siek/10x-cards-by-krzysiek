@@ -6,6 +6,8 @@ import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog";
 import { EmptyState } from "./EmptyState";
 import { Button } from "@/components/ui/button";
 import { Loader2Icon } from "lucide-react";
+import { toast } from "sonner";
+import type { FlashcardCreateDto, FlashcardUpdateDto } from "@/types";
 
 export function FlashcardsView() {
   const {
@@ -57,6 +59,22 @@ export function FlashcardsView() {
     );
   }
 
+  // Create flashcard with toast notification
+  const handleCreateFlashcard = async (data: FlashcardCreateDto) => {
+    await createFlashcard(data);
+    toast.success("Sukces!", {
+      description: "Fiszka została dodana do Twojej kolekcji."
+    });
+  };
+
+  // Update flashcard with toast notification
+  const handleUpdateFlashcard = async (data: FlashcardUpdateDto) => {
+    await updateFlashcard(data);
+    toast.success("Sukces!", {
+      description: "Fiszka została zaktualizowana."
+    });
+  };
+
   return (
     <div className="space-y-6">
       <FlashcardsHeader
@@ -104,7 +122,7 @@ export function FlashcardsView() {
       <FlashcardFormDialog
         isOpen={dialogState.isFlashcardFormOpen}
         onClose={closeDialog}
-        onSave={dialogState.flashcardToEdit ? updateFlashcard : createFlashcard}
+        onSave={dialogState.flashcardToEdit ? handleUpdateFlashcard : handleCreateFlashcard}
         flashcardToEdit={dialogState.flashcardToEdit}
       />
 
@@ -114,6 +132,9 @@ export function FlashcardsView() {
         onConfirm={() => {
           if (dialogState.itemToDelete) {
             deleteFlashcard(dialogState.itemToDelete.id);
+            toast.success("Sukces!", {
+              description: "Fiszka została usunięta."
+            });
           }
         }}
         itemType="flashcard"
