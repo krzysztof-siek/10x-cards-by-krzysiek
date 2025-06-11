@@ -30,6 +30,7 @@ export const GET: APIRoute = async ({ url, locals }) => {
       limit: url.searchParams.get("limit") ? Number(url.searchParams.get("limit")) : undefined,
       search: url.searchParams.get("search") || undefined,
       source: (url.searchParams.get("source") as any) || undefined,
+      random: url.searchParams.get("random") === "true",
     };
 
     // Validate search parameters
@@ -61,6 +62,7 @@ export const GET: APIRoute = async ({ url, locals }) => {
     const result = await flashcardService.list({
       ...validationResult.data,
       userId,
+      random: searchParams.random,
     });
 
     // Return response

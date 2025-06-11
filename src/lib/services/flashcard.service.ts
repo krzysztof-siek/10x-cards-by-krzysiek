@@ -16,13 +16,14 @@ interface SearchParams {
   search?: string;
   source?: Source;
   userId: string;
+  random?: boolean;
 }
 
 export class FlashcardService {
   constructor(private supabase: SupabaseClient) {}
 
   async list(params: SearchParams): Promise<FlashcardsListResponseDto> {
-    const { page = 1, limit = 20, search = "", source, userId } = params;
+    const { page = 1, limit = 20, search = "", source, userId, random = false } = params;
 
     // Ensure valid pagination values
     const validPage = Math.max(1, page);
@@ -45,8 +46,14 @@ export class FlashcardService {
       query = query.eq("source", source);
     }
 
-    // Apply pagination
-    query = query.range(offset, offset + validLimit - 1).order("created_at", { ascending: false });
+    // Apply ordering - random or default
+    if (random) {
+      // Random ordering when random flag is true
+      query = query.order("id", { ascending: false, nullsFirst: false }).limit(validLimit);
+    } else {
+      // Apply pagination for non-random queries
+      query = query.range(offset, offset + validLimit - 1).order("created_at", { ascending: false });
+    }
 
     // Execute the query
     const { data, error, count } = await query;
@@ -55,8 +62,11 @@ export class FlashcardService {
       throw new Error(`Failed to fetch flashcards: ${error.message}`);
     }
 
+    // For random ordering, shuffle the results for better randomization
+    const resultData = random && data ? [...data].sort(() => Math.random() - 0.5) : data || [];
+
     return {
-      data: data || [],
+      data: resultData,
       meta: {
         page: validPage,
         limit: validLimit,

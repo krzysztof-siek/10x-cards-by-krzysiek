@@ -204,3 +204,37 @@ export interface ValidationErrorDto extends ApiErrorDto {
     code: string;
   }[];
 }
+
+// Typy dla widoku ćwiczenia fiszek
+export interface AnsweredFlashcard {
+  flashcardId: number;
+  userAnswer: string;
+  isCorrect: boolean;
+}
+
+export interface PracticeSessionState {
+  flashcards: FlashcardDto[];
+  currentIndex: number;
+  answeredFlashcards: AnsweredFlashcard[];
+  isFinished: boolean;
+}
+
+export interface PracticeSessionSummary {
+  totalCount: number;
+  correctCount: number;
+  incorrectCount: number;
+  accuracy: number; // Procent poprawnych odpowiedzi
+}
+
+export interface PracticeSessionCreateDto {
+  flashcardIds: number[];
+  correctFlashcardIds: number[];
+}
+
+export interface PracticeSessionResponseDto {
+  id: number;
+  userId: number;
+  flashcardCount: number;
+  correctCount: number;
+  createdAt: string;
+}

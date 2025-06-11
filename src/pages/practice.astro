@@ -1,0 +1,11 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PracticeView from "../components/views/practice/PracticeView";
+---
+
+<Layout title="Ćwiczenie fiszek">
+  <div class="container py-8">
+    <h1 class="text-3xl font-bold mb-6">Ćwiczenie fiszek</h1>
+    <PracticeView client:load />
+  </div>
+</Layout>

@@ -9,6 +9,7 @@ Główne filary architektury to:
 - **Generowanie fiszek (AI):** Centralna funkcja aplikacji, umożliwiająca użytkownikom generowanie propozycji fiszek z tekstu, a następnie ich przeglądanie i zapisywanie.
 - **Zarządzanie fiszkami:** Pełna funkcjonalność CRUD (Tworzenie, Odczyt, Aktualizacja, Usuwanie) dla fiszek i kolekcji, w których są one zorganizowane.
 - **Historia:** Widok pozwalający użytkownikom śledzić ich poprzednie interakcje z modułem generowania AI.
+- **Ćwiczenie fiszek:** Widok umożliwiający aktywne ćwiczenie z wykorzystaniem zapisanych fiszek, prezentujący je w trybie nauki z natychmiastową informacją zwrotną.
 
 Projekt jest realizowany w podejściu "desktop-first", a za globalny stan aplikacji (np. status uwierzytelnienia) odpowiada React Context API. Komunikacja z API backendu jest hermetyzowana w dedykowanych hookach React, aby zapewnić czystość i reużywalność kodu.
 
@@ -122,6 +123,27 @@ Poniżej przedstawiono listę wszystkich niezbędnych widoków (stron) w aplikac
   - **Dostępność:** Standardy dostępności dla tabeli danych.
   - **Bezpieczeństwo:** Dostęp tylko dla zalogowanego użytkownika.
 
+---
+
+### **Nazwa widoku:** Ćwiczenie fiszek
+- **Ścieżka:** `/practice`
+- **Główny cel:** Umożliwienie użytkownikowi aktywnego ćwiczenia i weryfikacji wiedzy z zapisanych fiszek.
+- **Kluczowe informacje do wyświetlenia:**
+  - Przednia strona fiszki (pytanie/zagadnienie).
+  - Pole tekstowe do wprowadzenia odpowiedzi przez użytkownika.
+  - Informacja zwrotna o poprawności odpowiedzi (kolor zielony dla poprawnej, czerwony dla niepoprawnej).
+  - Przyciski nawigacji do kolejnej fiszki.
+- **Kluczowe komponenty widoku:**
+  - `PracticeCard.tsx`: Główny komponent wyświetlający bieżącą fiszkę, pole do odpowiedzi i wynik.
+  - `AnswerForm.tsx`: Formularz z polem tekstowym do wprowadzenia odpowiedzi i przyciskiem sprawdzenia.
+  - `FeedbackDisplay.tsx`: Komponent wyświetlający informację zwrotną o poprawności odpowiedzi.
+  - `PracticeControls.tsx`: Przyciski nawigacyjne i informacje o postępie sesji ćwiczeniowej.
+  - `EmptyState.tsx`: Komponent wyświetlany, gdy użytkownik nie ma żadnych fiszek do ćwiczenia.
+- **UX, dostępność i względy bezpieczeństwa:**
+  - **UX:** Losowa kolejność fiszek zapewnia skuteczne uczenie się. Natychmiastowa informacja zwrotna o poprawności odpowiedzi. Intuicyjna nawigacja między fiszkami.
+  - **Dostępność:** Wszystkie interaktywne elementy są dostępne z klawiatury, wyraźne kontrasty kolorów informacji zwrotnej.
+  - **Bezpieczeństwo:** Widok dostępny tylko dla zalogowanych użytkowników (chroniony przez middleware).
+
 ## 3. Mapa podróży użytkownika
 
 Główny przypadek użycia (generowanie i zapisywanie fiszek AI):
@@ -144,11 +166,12 @@ Nawigacja jest scentralizowana w głównym komponencie `Layout.astro`, który de
   - **Użytkownik zalogowany:** Wyświetla logo oraz główne linki nawigacyjne:
     - **Generuj** (`/generate`)
     - **Moje fiszki** (`/flashcards`)
+    - **Ćwicz** (`/practice`)
     - **Historia** (`/generations`)
     - W prawym górnym rogu znajduje się menu użytkownika (ikona/avatar) z opcją "Wyloguj".
 - **Obszar główny (Main Content):** Dynamicznie renderuje zawartość strony (widoku).
 - **Stopka (Footer):** Zawiera linki do polityki prywatności i regulaminu.
-- **Ochrona tras:** Middleware w Astro (`src/middleware/index.ts`) będzie przechwytywać próby dostępu do chronionych stron (`/generate`, `/flashcards`, `/generations`) przez niezalogowanych użytkowników i przekierowywać ich do `/login`.
+- **Ochrona tras:** Middleware w Astro (`src/middleware/index.ts`) będzie przechwytywać próby dostępu do chronionych stron (`/generate`, `/flashcards`, `/generations`, `/practice`) przez niezalogowanych użytkowników i przekierowywać ich do `/login`.
 
 ## 5. Kluczowe komponenty
 

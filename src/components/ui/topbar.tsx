@@ -24,6 +24,9 @@ export function Topbar({ user }: TopbarProps) {
               <Button variant="ghost" asChild>
                 <a href="/flashcards">Fiszki</a>
               </Button>
+              <Button variant="ghost" asChild>
+                <a href="/practice">Ćwicz</a>
+              </Button>
             </>
           ) : (
             <Button variant="ghost" asChild>

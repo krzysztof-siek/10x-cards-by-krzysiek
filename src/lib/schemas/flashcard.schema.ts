@@ -50,4 +50,5 @@ export const flashcardsSearchSchema = z.object({
   limit: z.coerce.number().int().positive().max(100).optional().default(20),
   search: z.string().optional(),
   source: z.enum(["manual", "ai-full", "ai-edited"]).optional(),
+  random: z.boolean().optional().default(false),
 });

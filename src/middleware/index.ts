@@ -17,7 +17,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   // Sprawdzenie czy strona wymaga autoryzacji
   const url = new URL(context.request.url);
-  const protectedRoutes = ["/flashcards", "/generate"];
+  const protectedRoutes = ["/flashcards", "/generate", "/practice"];
 
   if (protectedRoutes.some((route) => url.pathname.startsWith(route)) && !session) {
     // Przekierowanie niezalogowanego użytkownika do strony logowania
