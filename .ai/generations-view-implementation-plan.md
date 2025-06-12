@@ -30,6 +30,7 @@ Endpoint służy do generowania sugestii fiszek na podstawie tekstu źródłoweg
 ## 4. Szczegóły odpowiedzi
 
 ### Sukces (201 Created)
+
 ```json
 {
   "generation": {
@@ -52,6 +53,7 @@ Endpoint służy do generowania sugestii fiszek na podstawie tekstu źródłoweg
 ```
 
 ### Błędy
+
 - **400 Bad Request**: Nieprawidłowa długość source_text
 - **401 Unauthorized**: Brak lub nieprawidłowy token JWT
 - **503 Service Unavailable**: Błąd usługi LLM
@@ -79,21 +81,25 @@ Endpoint służy do generowania sugestii fiszek na podstawie tekstu źródłoweg
 ## 7. Obsługa błędów
 
 ### Walidacja wejścia (400)
+
 - source_text krótszy niż 1000 znaków
 - source_text dłuższy niż 10000 znaków
 - source_text nie jest stringiem lub jest pusty
 - Nieprawidłowy format JSON
 
 ### Błędy uwierzytelnienia (401)
+
 - Brak headerza Authorization
 - Nieprawidłowy lub wygasły JWT token
 
 ### Błędy LLM (503)
+
 - Usługa OpenRouter.ai niedostępna
 - Timeout wywołania LLM
 - Błędy rate limiting od dostawcy LLM
 
 ### Błędy serwera (500)
+
 - Błędy połączenia z bazą danych
 - Błędy zapisu do generation_error_logs
 - Nieoczekiwane błędy aplikacji
@@ -112,34 +118,40 @@ Endpoint służy do generowania sugestii fiszek na podstawie tekstu źródłoweg
 ## 9. Etapy wdrożenia
 
 1. **Utworzenie struktury plików**
+
    - `src/pages/api/generations.ts` - główny endpoint
    - `src/lib/services/llm.service.ts` - serwis LLM
    - `src/lib/services/generation.service.ts` - serwis generacji
    - `src/lib/services/error-log.service.ts` - serwis logowania błędów
 
 2. **Implementacja walidacji danych wejściowych**
+
    - Utworzenie schematu Zod dla `GenerateFlashcardsCommand`
    - Walidacja długości source_text (1000-10000 znaków)
    - Walidacja formatu JSON
 
 3. **Implementacja serwisu LLM**
+
    - Konfiguracja klienta OpenRouter.ai
    - Implementacja wywołania LLM z odpowiednim promptem
    - Obsługa timeout'ów i błędów sieciowych
    - Parsowanie odpowiedzi LLM do formatu `SuggestionDto[]`
 
 4. **Implementacja serwisu generacji**
+
    - Funkcja tworzenia rekordu generacji w bazie danych
    - Obliczanie hash'a tekstu źródłowego (np. SHA-256)
    - Pomiar czasu trwania generacji
    - Integracja z Supabase klientem
 
 5. **Implementacja serwisu logowania błędów**
+
    - Funkcja zapisywania błędów LLM do generation_error_logs
    - Mapowanie kodów błędów na czytelne komunikaty
    - Zachowanie informacji o kontekście błędu
 
 6. **Implementacja głównego endpointa**
+
    - Sprawdzenie uwierzytelnienia (supabase z context.locals)
    - Walidacja danych wejściowych
    - Koordynacja wywołań serwisów
@@ -147,12 +159,13 @@ Endpoint służy do generowania sugestii fiszek na podstawie tekstu źródłoweg
    - Formatowanie odpowiedzi zgodnie z `GenerationCreateResponseDto`
 
 7. **Implementacja middleware uwierzytelnienia** (jeśli nie istnieje)
+
    - Walidacja JWT tokenu
    - Dodanie userId do context.locals
    - Obsługa błędów uwierzytelnienia
 
-10. **Dokumentacja i finalizacja**
-    - Aktualizacja dokumentacji API
-    - Sprawdzenie zgodności z typami TypeScript
-    - Weryfikacja zgodności z regułami linter'a
-    - Code review i optymalizacje wydajności 
+8. **Dokumentacja i finalizacja**
+   - Aktualizacja dokumentacji API
+   - Sprawdzenie zgodności z typami TypeScript
+   - Weryfikacja zgodności z regułami linter'a
+   - Code review i optymalizacje wydajności

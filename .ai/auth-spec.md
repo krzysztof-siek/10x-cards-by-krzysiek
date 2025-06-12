@@ -5,12 +5,14 @@
 ### 1.1. Strony i komponenty autentykacji
 
 #### Nowe strony Astro:
+
 - `src/pages/auth/login.astro` - Strona logowania
 - `src/pages/auth/register.astro` - Strona rejestracji
 - `src/pages/auth/reset-password.astro` - Strona odzyskiwania hasła
 - `src/pages/auth/new-password.astro` - Strona ustawiania nowego hasła (po resetowaniu)
 
 #### Nowe komponenty React:
+
 - `src/components/auth/LoginForm.tsx` - Formularz logowania
 - `src/components/auth/RegisterForm.tsx` - Formularz rejestracji
 - `src/components/auth/ResetPasswordForm.tsx` - Formularz resetowania hasła
@@ -18,6 +20,7 @@
 - `src/components/auth/AuthStatus.tsx` - Komponent wyświetlający status autentykacji (zalogowany/niezalogowany)
 
 #### Modyfikacje istniejących komponentów:
+
 - `src/components/ui/topbar.tsx` - Modyfikacja pasków nawigacyjnych:
   - Dla niezalogowanych użytkowników: Przyciski logowania/rejestracji w prawym górnym rogu
   - Dla zalogowanych użytkowników: Wyświetlanie imienia użytkownika oraz ikonki z możliwością wylogowania w prawym górnym rogu
@@ -25,6 +28,7 @@
 ### 1.2. Podział odpowiedzialności między komponentami
 
 #### Strony Astro:
+
 - Odpowiadają za renderowanie statycznego HTML z formularzami
 - Implementują logikę przekierowania niezalogowanych użytkowników z chronionych stron
 - Przekazują stan sesji do komponentów React (hydration props)
@@ -32,6 +36,7 @@
 - Niezalogowany użytkownik ma dostęp jedynie do strony głównej, z której może zostać przekierowany do stron logowania lub rejestracji
 
 #### Komponenty React:
+
 - Odpowiadają za obsługę formularzy autentykacji (walidacja, wysyłanie, obsługa błędów)
 - Zarządzają stanem formularzy (dane wejściowe, błędy, stan ładowania)
 - Wywołują odpowiednie API Supabase Auth
@@ -42,11 +47,13 @@
 ### 1.3. Walidacja i komunikaty błędów
 
 #### Walidacja po stronie klienta:
+
 - Pola email: format adresu email (regex)
 - Hasło: min. 8 znaków, conajmniej jedna wielka litera, cyfra i znak specjalny
 - Powtórzone hasło: zgodność z pierwszym hasłem
 
 #### Komunikaty błędów:
+
 - Nieprawidłowy format adresu email
 - Hasło nie spełnia wymagań bezpieczeństwa
 - Hasła nie są zgodne
@@ -58,11 +65,13 @@
 ### 1.4. Scenariusze użytkownika
 
 #### Nawigacja dla niezalogowanego użytkownika:
+
 1. Niezalogowany użytkownik ma dostęp wyłącznie do strony głównej
 2. Próba dostępu do widoku listy fiszek lub generatora powoduje przekierowanie do strony logowania
 3. Z głównej strony użytkownik może przejść do strony logowania lub rejestracji za pomocą przycisków w prawym górnym rogu
 
 #### Rejestracja:
+
 1. Użytkownik wchodzi na stronę `/auth/register` poprzez przycisk w prawym górnym rogu
 2. Wypełnia formularz rejestracyjny (email, hasło, powtórzenie hasła)
 3. Po walidacji danych, formularz wywołuje API Supabase Auth
@@ -71,6 +80,7 @@
 6. W przypadku błędu wyświetlany jest odpowiedni komunikat
 
 #### Logowanie:
+
 1. Użytkownik wchodzi na stronę `/auth/login` poprzez przycisk w prawym górnym rogu
 2. Wypełnia formularz logowania (email, hasło)
 3. Po walidacji danych, formularz wywołuje API Supabase Auth
@@ -78,6 +88,7 @@
 5. W przypadku błędu wyświetlany jest odpowiedni komunikat o nieprawidłowych danych (zgodnie z US-002)
 
 #### Odzyskiwanie hasła:
+
 1. Użytkownik klika "Zapomniałem hasła" na stronie logowania
 2. Zostaje przekierowany do formularza odzyskiwania hasła
 3. Po podaniu adresu email i walidacji, wysyłana jest wiadomość z linkiem do resetowania hasła
@@ -86,11 +97,13 @@
 6. Po podaniu i potwierdzeniu nowego hasła, może zalogować się używając nowych danych
 
 #### Wylogowanie:
+
 1. Zalogowany użytkownik klika ikonkę wylogowania w prawym górnym rogu
 2. Sesja jest usuwana z Supabase Auth
 3. Użytkownik jest przekierowywany do strony głównej
 
 #### Usunięcie konta:
+
 1. Zalogowany użytkownik przechodzi do ustawień konta
 2. Wybiera opcję usunięcia konta
 3. Po potwierdzeniu, konto wraz z powiązanymi fiszkami zostaje trwale usunięte (zgodnie z punktem 3 Wymagań funkcjonalnych)
@@ -101,6 +114,7 @@
 ### 2.1. Struktura endpointów API
 
 #### Endpointy Astro API:
+
 - `src/pages/api/auth/register.ts` - Endpoint rejestracji
 - `src/pages/api/auth/login.ts` - Endpoint logowania
 - `src/pages/api/auth/logout.ts` - Endpoint wylogowania
@@ -111,10 +125,12 @@
 ### 2.2. Modele danych
 
 #### Rozszerzenie modelu Supabase:
+
 - Nie wymaga dodatkowych tabel - wykorzystuje wbudowane tabele Supabase Auth
 - Rozszerzenie typu Database w `src/db/database.types.ts` o typy auth
 
 #### Modele DTO:
+
 - `src/types.ts` - Rozszerzenie o typy dla autentykacji:
   - `RegisterDTO` - Dane rejestracji (email, hasło, powtórzone hasło)
   - `LoginDTO` - Dane logowania (email, hasło)
@@ -125,6 +141,7 @@
 ### 2.3. Mechanizm walidacji danych wejściowych
 
 #### Walidacja serwerowa:
+
 - Wykorzystanie biblioteki Zod do definiowania schematów walidacyjnych
 - Implementacja schematów w `src/lib/schemas/auth.schema.ts`
 - Walidacja danych wejściowych przed wywołaniem Supabase Auth API
@@ -133,6 +150,7 @@
 ### 2.4. Obsługa wyjątków
 
 #### Strategie obsługi błędów:
+
 - Mapowanie błędów Supabase Auth na przyjazne dla użytkownika komunikaty
 - Logowanie błędów na serwerze z wykorzystaniem `error-log.service.ts`
 - Zwracanie odpowiednich kodów HTTP i komunikatów błędów
@@ -140,6 +158,7 @@
 ### 2.5. Aktualizacja renderowania server-side
 
 #### Middleware Astro:
+
 - Rozszerzenie `src/middleware/index.ts` o funkcjonalność sprawdzania sesji
 - Dodanie kontekstu użytkownika do `Astro.locals`
 - Implementacja mechanizmu ochrony stron wymagających autentykacji
@@ -151,6 +170,7 @@
 ### 3.1. Integracja z Supabase Auth
 
 #### Serwis autentykacji:
+
 - `src/lib/services/auth.service.ts` - Główny serwis obsługujący autentykację
 - Metody:
   - `register(email, password)` - Rejestracja użytkownika
@@ -163,6 +183,7 @@
   - `deleteAccount(password)` - Usunięcie konta użytkownika i powiązanych fiszek (zgodnie z punktem 3 Wymagań funkcjonalnych)
 
 #### Zarządzanie sesją:
+
 - Wykorzystanie mechanizmów Supabase Auth do zarządzania sesją
 - Przechowywanie tokenu JWT w bezpiecznych ciasteczkach
 - Automatyczne odświeżanie tokenu
@@ -171,6 +192,7 @@
 ### 3.2. Ochrona stron wymagających autentykacji
 
 #### Implementacja ochrony stron:
+
 - Wykorzystanie prerendering flag w stronach Astro (`export const prerender = false;`)
 - Dodanie sprawdzania autentykacji w middleware
 - Automatyczne przekierowanie niezalogowanych użytkowników do strony logowania
@@ -178,6 +200,7 @@
 - Dostęp niezalogowanych użytkowników ograniczony wyłącznie do strony głównej i stron autentykacji
 
 #### Stany interfejsu zależne od autentykacji:
+
 - Dynamiczne wyświetlanie elementów nawigacji w zależności od stanu autentykacji:
   - Dla niezalogowanych: przyciski logowania/rejestracji w prawym górnym rogu
   - Dla zalogowanych: imię użytkownika oraz ikonka z opcją wylogowania w prawym górnym rogu
@@ -193,6 +216,7 @@
 ## 4. IMPLEMENTACJA TECHNICZNA
 
 ### 4.1. Nowe zależności
+
 - Nie ma potrzeby dodawania nowych zależności - wykorzystujemy istniejące:
   - `@supabase/supabase-js` - klient Supabase
   - `zod` - biblioteka do walidacji danych
@@ -201,6 +225,7 @@
 ### 4.2. Przepływ danych
 
 #### Rejestracja:
+
 1. Komponent `RegisterForm` zbiera dane od użytkownika
 2. Dane są walidowane przez schematy Zod
 3. Komponent wysyła żądanie do endpointu `/api/auth/register`
@@ -209,6 +234,7 @@
 6. W przypadku błędu, informacja jest zwracana do formularza
 
 #### Logowanie:
+
 1. Komponent `LoginForm` zbiera dane od użytkownika
 2. Dane są walidowane przez schematy Zod
 3. Komponent wysyła żądanie do endpointu `/api/auth/login`
@@ -217,18 +243,21 @@
 6. W przypadku błędu, informacja jest zwracana do formularza
 
 #### Ochrona stron:
+
 1. Middleware sprawdza sesję z Supabase Auth
 2. Jeśli sesja istnieje, dane użytkownika są dodawane do `Astro.locals`
 3. Jeśli sesja nie istnieje a strona wymaga autentykacji, następuje przekierowanie do strony logowania
 4. Komponenty Astro mogą sprawdzać stan autentykacji i renderować odpowiednią zawartość
 
 #### Wylogowanie:
+
 1. Użytkownik klika ikonkę wylogowania w prawym górnym rogu
 2. Wywoływany jest endpoint `/api/auth/logout`
 3. Sesja jest usuwana z Supabase Auth
 4. Użytkownik jest przekierowywany do strony głównej
 
 #### Usunięcie konta:
+
 1. Użytkownik potwierdza chęć usunięcia konta podając hasło
 2. Endpoint `/api/auth/delete-account` wywołuje metodę `deleteAccount` z `auth.service.ts`
 3. Serwis usuwa wszystkie fiszki użytkownika z bazy danych
@@ -238,10 +267,12 @@
 ### 4.3. Bezpieczeństwo
 
 #### Przechowywanie tokenów:
+
 - Tokeny JWT przechowywane w bezpiecznych ciasteczkach (HttpOnly, Secure, SameSite)
 - Automatyczne odświeżanie tokenów przez klienta Supabase
 
 #### Ochrona przed atakami:
+
 - Implementacja rate-limitingu dla endpointów autentykacji
 - Walidacja danych wejściowych na poziomie schematu
-- Sanityzacja danych przed użyciem w zapytaniach 
+- Sanityzacja danych przed użyciem w zapytaniach

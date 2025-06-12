@@ -1,27 +1,30 @@
 # REST API Plan
 
 ## 1. Resources
+
 - **User** (`users` via Supabase Auth)
 - **Flashcard** (`flashcards`)
 - **Generation** (`generations`)
 - **Generation Error Log** (`generation_error_logs`)
-- **Collection** (`collections`)* (assumed new table)
+- **Collection** (`collections`)\* (assumed new table)
 
 ## 2. Endpoints
 
 ### 2.2 Flashcards
 
 #### List Flashcards
+
 - Method: GET
 - URL: `/flashcards`
 - Description: Retrieve paginated list of user's flashcards.
 - Query Parameters: `page`, `limit`, `search`, `source`
 - Response 200:
   ```json
-  { "data": [ { "id": 1, "front": "...", "back": "...", /*...*/ } ], "meta": { "page": 1, "limit": 20, "total": 100 } }
+  { "data": [{ "id": 1, "front": "...", "back": "..." /*...*/ }], "meta": { "page": 1, "limit": 20, "total": 100 } }
   ```
 
 #### Get Flashcard
+
 - Method: GET
 - URL: `/flashcards/:id`
 - Description: Retrieve single flashcard
@@ -29,6 +32,7 @@
 - Errors: 404, 403
 
 #### Create Flashcards
+
 - Method: POST
 - URL: `/flashcards`
 - Description: Create one or multiple flashcards (manual or AI-generated)
@@ -66,7 +70,7 @@
     }
   }
   ```
-- Errors: 
+- Errors:
   - 400 (validation):
     - front exceeds 200 characters
     - back exceeds 500 characters
@@ -76,6 +80,7 @@
   - 422 (if any flashcards failed to create, with details)
 
 #### Update Flashcard
+
 - Method: PUT
 - URL: `/flashcards/:id`
 - Description: Edit flashcard
@@ -84,6 +89,7 @@
 - Errors: 400, 404, 403
 
 #### Delete Flashcard
+
 - Method: DELETE
 - URL: `/flashcards/:id`
 - Description: Permanently remove a flashcard
@@ -93,36 +99,42 @@
 ### 2.3 Generations
 
 #### Create Generation & Generate Suggestions
+
 - Method: POST
 - URL: `/generations`
 - Description: Send source text to LLM, create generation record
 - Request Body:
   ```json
   {
-    "source_text": "... 1k–10k chars ...",
+    "source_text": "... 1k–10k chars ..."
   }
   ```
 - Response 201:
   ```json
   {
-    "generation": { /* generation record */ },
-    "suggestions": [ { "front": "...", "back": "..." } ]
+    "generation": {
+      /* generation record */
+    },
+    "suggestions": [{ "front": "...", "back": "..." }]
   }
   ```
 - Errors: 400 (length), 503 (LLM error), 500 (AI service errors - logs recorded in 'generation_error_logs')
 
 #### List Generations
+
 - Method: GET
 - URL: `/generations`
 - Query: `page`, `limit`
 - Response: paginated generation list
 
 #### Get Generation
+
 - Method: GET
 - URL: `/generations/:id`
 - Description: Retrieve details + counts
 
 #### Accept Suggestions
+
 - Method: POST
 - URL: `/generations/:id/flashcards`
 - Description: Persist selected suggestions
@@ -135,20 +147,21 @@
 ### 2.4 Generation Error Logs
 
 #### List Error Logs
+
 - Method: GET
 - URL: `/generation-error-logs`
 - Description: View past generation errors for the authenticated user or admin
 - Query: `page`, `limit`
 
-
-
 ## 3. Authentication and Authorization
+
 - **Mechanism**: Supabase Auth (JWT)
 - **Header**: `Authorization: Bearer <token>`
 - **RLS**: Each table implements policies: `user_id = auth.uid()`
 - **Role Guarding**: Middleware checks valid JWT and attaches `userId`
 
 ## 4. Validation and Business Logic
+
 - **Flashcard**:
   - `front` length ≤ 200
   - `back` length ≤ 500
@@ -166,10 +179,10 @@
   - `ease` integer 1–5, `correct` boolean
 
 **Business Workflows**:
+
 - Generate: Create generation record, call LLM, return suggestions
 - Accept: Persist chosen suggestions, update counts
 - Manual CRUD: standard create/update/delete with RLS
 - Study: Fetch due cards by algorithm, record responses
 
-
-*Note: Collections resource assumes schema addition; integrate with existing RLS.* 
+_Note: Collections resource assumes schema addition; integrate with existing RLS._

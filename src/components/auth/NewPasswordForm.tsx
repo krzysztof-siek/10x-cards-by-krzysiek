@@ -1,54 +1,11 @@
 import React from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { toast } from "sonner";
-
-const newPasswordSchema = z
-  .object({
-    password: z
-      .string()
-      .min(8, "Hasło musi mieć co najmniej 8 znaków")
-      .regex(/[A-Z]/, "Hasło musi zawierać co najmniej jedną wielką literę")
-      .regex(/\d/, "Hasło musi zawierać co najmniej jedną cyfrę")
-      .regex(/[!@#$%^&*(),.?":{}|<>]/, "Hasło musi zawierać co najmniej jeden znak specjalny"),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Hasła nie są zgodne",
-    path: ["confirmPassword"],
-  });
-
-type NewPasswordFormValues = z.infer<typeof newPasswordSchema>;
+import { useNewPasswordForm } from "@/hooks/auth/useNewPasswordForm";
 
 export function NewPasswordForm() {
-  const form = useForm<NewPasswordFormValues>({
-    resolver: zodResolver(newPasswordSchema),
-    defaultValues: {
-      password: "",
-      confirmPassword: "",
-    },
-  });
-
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [isSubmitted, setIsSubmitted] = React.useState(false);
-
-  const onSubmit = async () => {
-    setIsLoading(true);
-    try {
-      // This is just a placeholder for future backend implementation
-      // We'll need to extract the token from the URL for the actual implementation
-      setIsSubmitted(true);
-      toast.success("Hasło zostało zmienione");
-    } catch {
-      toast.error("Błąd podczas zmiany hasła");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { form, isLoading, isSubmitted, onSubmit } = useNewPasswordForm();
 
   if (isSubmitted) {
     return (
@@ -67,7 +24,7 @@ export function NewPasswordForm() {
   return (
     <div className="w-full max-w-md mx-auto">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={onSubmit} className="space-y-6">
           <div className="space-y-2 text-center">
             <h2 className="text-xl font-semibold">Ustaw nowe hasło</h2>
             <p className="text-muted-foreground">Wprowadź swoje nowe hasło poniżej.</p>

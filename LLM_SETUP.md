@@ -25,11 +25,13 @@ Aplikacja korzysta z API OpenRouter do generowania fiszek. Aby poprawnie korzyst
 Możesz również skonfigurować zmienną środowiskową systemową:
 
 **Linux/macOS:**
+
 ```bash
 export OPENROUTER_API_KEY=sk-or-v1-your-key-here
 ```
 
 **Windows (PowerShell):**
+
 ```powershell
 $env:OPENROUTER_API_KEY = "sk-or-v1-your-key-here"
 ```
@@ -43,6 +45,7 @@ Aplikacja korzysta z modelu **OpenAI GPT-3.5-Turbo** (`openai/gpt-3.5-turbo`), k
 Jeśli chcesz zmienić model, możesz to zrobić edytując plik `src/lib/services/llm.service.ts` i zmieniając wartość parametru `model` w konstruktorze serwisu. Lista wszystkich dostępnych modeli jest dostępna na stronie [OpenRouter Models](https://openrouter.ai/models).
 
 Popularne alternatywy:
+
 - `anthropic/claude-3-haiku` - dobra jakość, szybszy niż Opus
 - `anthropic/claude-3-opus` - wysoka jakość, ale wolniejszy i droższy
 - `openai/gpt-4` - wysokiej jakości model OpenAI
@@ -51,7 +54,8 @@ Popularne alternatywy:
 ## Rozwiązywanie problemów
 
 Jeśli otrzymujesz błąd dotyczący klucza API:
+
 1. Upewnij się, że klucz API jest poprawnie skonfigurowany
 2. Sprawdź, czy Twój klucz ma wystarczające środki/kredyty
 3. Upewnij się, że model, którego próbujesz użyć, jest dostępny w Twoim planie
-4. Sprawdź, czy model obsługuje strukturyzowane dane w formacie JSON 
+4. Sprawdź, czy model obsługuje strukturyzowane dane w formacie JSON

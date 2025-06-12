@@ -11,6 +11,7 @@ Niniejszy dokument opisuje plan testów dla aplikacji "10x Cards", która umożl
 Głównym celem testów jest zapewnienie, że aplikacja spełnia wymagania funkcjonalne i niefunkcjonalne, jest stabilna, bezpieczna i intuicyjna dla użytkownika końcowego.
 
 Szczegółowe cele:
+
 - Weryfikacja poprawności działania kluczowych funkcjonalności (rejestracja, logowanie, zarządzanie fiszkami, generowanie AI).
 - Zapewnienie bezpieczeństwa danych użytkownika i autoryzacji dostępu.
 - Identyfikacja i eliminacja błędów przed wdrożeniem produkcyjnym.
@@ -23,30 +24,30 @@ Szczegółowe cele:
 ### Funkcjonalności objęte testami:
 
 - **Moduł uwierzytelniania:**
-    - Rejestracja nowego użytkownika.
-    - Logowanie i wylogowywanie.
-    - Zarządzanie sesją użytkownika.
-    - Resetowanie hasła.
-    - Ochrona tras wymagających zalogowania.
+  - Rejestracja nowego użytkownika.
+  - Logowanie i wylogowywanie.
+  - Zarządzanie sesją użytkownika.
+  - Resetowanie hasła.
+  - Ochrona tras wymagających zalogowania.
 - **Moduł zarządzania fiszkami:**
-    - Tworzenie, odczyt, aktualizacja i usuwanie (CRUD) zestawów fiszek.
-    - Wyświetlanie listy zestawów fiszek.
-    - Walidacja danych w formularzach.
+  - Tworzenie, odczyt, aktualizacja i usuwanie (CRUD) zestawów fiszek.
+  - Wyświetlanie listy zestawów fiszek.
+  - Walidacja danych w formularzach.
 - **Moduł generowania fiszek (AI):**
-    - Wprowadzanie tekstu źródłowego.
-    - Generowanie sugestii fiszek przez AI.
-    - Dodawanie wygenerowanych fiszek do zestawu.
-    - Obsługa stanów ładowania i błędów.
+  - Wprowadzanie tekstu źródłowego.
+  - Generowanie sugestii fiszek przez AI.
+  - Dodawanie wygenerowanych fiszek do zestawu.
+  - Obsługa stanów ładowania i błędów.
 - **Moduł ćwiczeń:**
-    - Wyświetlanie fiszek w trybie nauki.
-    - Walidacja odpowiedzi użytkownika.
-    - Wyświetlanie informacji zwrotnej (poprawna/niepoprawna odpowiedź).
-    - Kontrola postępu sesji ćwiczeniowej.
-    - Obsługa przejść między fiszkami.
-    - Porównywanie odpowiedzi z uwzględnieniem formatowania.
-    - Wyświetlanie statystyk sesji.
+  - Wyświetlanie fiszek w trybie nauki.
+  - Walidacja odpowiedzi użytkownika.
+  - Wyświetlanie informacji zwrotnej (poprawna/niepoprawna odpowiedź).
+  - Kontrola postępu sesji ćwiczeniowej.
+  - Obsługa przejść między fiszkami.
+  - Porównywanie odpowiedzi z uwzględnieniem formatowania.
+  - Wyświetlanie statystyk sesji.
 - **API Backendowe:**
-    - Testowanie każdego endpointu pod kątem poprawności działania, walidacji i obsługi błędów.
+  - Testowanie każdego endpointu pod kątem poprawności działania, walidacji i obsługi błędów.
 
 ### Funkcjonalności wyłączone z testów:
 
@@ -67,15 +68,15 @@ Szczegółowe cele:
     - **Cel:** Weryfikacja współpracy między różnymi częściami systemu.
     - **Narzędzia:** Vitest (dla backendu), Playwright.
     - **Zakres:**
-        - Testowanie endpointów API (`src/pages/api`) wraz z ich interakcją z serwisami i bazą danych (na testowej bazie danych).
-        - Testowanie integracji z mockowanym API LLM.
-        - Testowanie interakcji frontend-backend.
+      - Testowanie endpointów API (`src/pages/api`) wraz z ich interakcją z serwisami i bazą danych (na testowej bazie danych).
+      - Testowanie integracji z mockowanym API LLM.
+      - Testowanie interakcji frontend-backend.
 4.  **Testy End-to-End (E2E):**
     - **Cel:** Symulacja rzeczywistych scenariuszy użycia aplikacji z perspektywy użytkownika.
     - **Narzędzia:** Playwright.
     - **Zakres:** Pełne przepływy użytkownika, np.:
-        - `Rejestracja -> Logowanie -> Wygenerowanie fiszek -> Zapisanie zestawu -> Wylogowanie`.
-        - `Logowanie -> Edycja istniejącego zestawu -> Usunięcie zestawu`.
+      - `Rejestracja -> Logowanie -> Wygenerowanie fiszek -> Zapisanie zestawu -> Wylogowanie`.
+      - `Logowanie -> Edycja istniejącego zestawu -> Usunięcie zestawu`.
 5.  **Testy manualne (Manual Testing):**
     - **Cel:** Eksploracyjne testowanie aplikacji w celu znalezienia błędów, których nie wykryły testy automatyczne, oraz ocena ogólnego UX/UI.
     - **Zakres:** Cała aplikacja, ze szczególnym uwzględnieniem responsywności (RWD) i użyteczności.
@@ -174,4 +175,4 @@ Szczegółowe cele:
     - Załączniki: Zrzuty ekranu, nagrania wideo, logi z konsoli.
 3.  **Cykl życia błędu:**
     - `Nowy` -> `W analizie` -> `W naprawie` -> `Gotowy do testów` -> `W weryfikacji` -> `Zamknięty` / `Otwarty ponownie`.
-4.  **Triage błędów:** Regularne spotkania zespołu w celu przeglądu, priorytetyzacji i przypisania zgłoszonych błędów. 
+4.  **Triage błędów:** Regularne spotkania zespołu w celu przeglądu, priorytetyzacji i przypisania zgłoszonych błędów.

@@ -7,6 +7,7 @@ Celem tego widoku jest zapewnienie zalogowanemu użytkownikowi pełnej funkcjona
 ## 2. Routing widoku
 
 Widok będzie dostępny pod następującą ścieżką:
+
 - **Ścieżka:** `/flashcards`
 
 Strona ta powinna być chroniona i dostępna tylko dla uwierzytelnionych użytkowników.
@@ -32,6 +33,7 @@ Hierarchia komponentów React zostanie zaimplementowana wewnątrz strony Astro (
 ## 4. Szczegóły komponentów
 
 ### `FlashcardsView.tsx`
+
 - **Opis:** Główny komponent-kontener, który zarządza stanem całego widoku, w tym listą fiszek, kolekcjami, filtrami, paginacją oraz stanem dialogów (modal). Komunikuje się z API za pomocą customowego hooka `useFlashcards`.
 - **Główne elementy:** Renderuje komponenty `CollectionsManager`, `FlashcardsHeader`, `FlashcardsTable` oraz modale.
 - **Obsługiwane interakcje:** Obsługuje zdarzenia od komponentów podrzędnych, takie jak zmiana filtra, paginacji, otwarcie modala edycji/tworzenia/usuwania.
@@ -39,6 +41,7 @@ Hierarchia komponentów React zostanie zaimplementowana wewnątrz strony Astro (
 - **Propsy:** Brak.
 
 ### `CollectionsManager.tsx`
+
 - **Opis:** Wyświetla listę kolekcji, pozwala na filtrowanie fiszek po wybranej kolekcji oraz udostępnia akcje CRUD dla kolekcji (tworzenie, zmiana nazwy, usuwanie).
 - **Główne elementy:** Lista przycisków lub linków reprezentujących kolekcje, przycisk "Dodaj kolekcję".
 - **Obsługiwane interakcje:** `onSelectCollection(collectionId)`, `onCreateCollection(name)`, `onDeleteCollection(id)`.
@@ -46,6 +49,7 @@ Hierarchia komponentów React zostanie zaimplementowana wewnątrz strony Astro (
 - **Propsy:** `collections`, `selectedCollectionId`, `onSelectCollection`, `onCreate`, `onDelete`.
 
 ### `FlashcardsTable.tsx`
+
 - **Opis:** Prezentuje listę fiszek w formie tabeli (`Shadcn/ui Table`). Zawiera paginację i przyciski akcji dla każdego wiersza.
 - **Główne elementy:** `Table`, `TableHeader`, `TableBody`, `TableRow`, `TableCell`, `Button`.
 - **Obsługiwane interakcje:** `onEdit(flashcard)`, `onDelete(flashcard)`.
@@ -53,6 +57,7 @@ Hierarchia komponentów React zostanie zaimplementowana wewnątrz strony Astro (
 - **Propsy:** `flashcards`, `onEdit`, `onDelete`.
 
 ### `FlashcardFormDialog.tsx`
+
 - **Opis:** Modal (`Shadcn/ui Dialog`) z formularzem do tworzenia nowej lub edycji istniejącej fiszki.
 - **Główne elementy:** `Dialog`, `DialogContent`, `Form`, `Input` (dla przodu i tyłu fiszki), `Button` "Zapisz".
 - **Obsługiwane interakcje:** `onSave(data: FlashcardCreateDto | FlashcardUpdateDto)`.
@@ -63,6 +68,7 @@ Hierarchia komponentów React zostanie zaimplementowana wewnątrz strony Astro (
 - **Propsy:** `isOpen`, `onClose`, `onSave`, `flashcardToEdit`.
 
 ### `DeleteConfirmationDialog.tsx`
+
 - **Opis:** Prosty modal (`Shadcn/ui Dialog`) proszący o potwierdzenie operacji usunięcia fiszki lub kolekcji.
 - **Główne elementy:** `Dialog`, `DialogContent`, `Button` "Potwierdź", `Button` "Anuluj".
 - **Obsługiwane interakcje:** `onConfirm()`.
@@ -73,83 +79,85 @@ Hierarchia komponentów React zostanie zaimplementowana wewnątrz strony Astro (
 
 Większość typów DTO jest już zdefiniowana w `src/types.ts`. Wprowadzimy następujące typy po stronie klienta:
 
--   **`FlashcardViewModel`**: Rozszerza `FlashcardDto` o pola potrzebne do zarządzania stanem UI.
-    ```typescript
-    import { FlashcardDto } from './types';
+- **`FlashcardViewModel`**: Rozszerza `FlashcardDto` o pola potrzebne do zarządzania stanem UI.
 
-    export interface FlashcardViewModel extends FlashcardDto {
-      isDeleting?: boolean; // Flaga do wyświetlania spinnera podczas usuwania
-    }
-    ```
--   **`Collection`**: Typ dla kolekcji (do zdefiniowania, gdy powstanie API).
-    ```typescript
-    export interface Collection {
-      id: number;
-      name: string;
-      flashcard_count?: number;
-    }
-    ```
--   **`ApiFilters`**: Obiekt przechowujący stan filtrów do zapytania API.
-    ```typescript
-    export interface ApiFilters {
-      page: number;
-      limit: number;
-      search: string;
-      collectionId: number | null;
-    }
-    ```
+  ```typescript
+  import { FlashcardDto } from "./types";
+
+  export interface FlashcardViewModel extends FlashcardDto {
+    isDeleting?: boolean; // Flaga do wyświetlania spinnera podczas usuwania
+  }
+  ```
+
+- **`Collection`**: Typ dla kolekcji (do zdefiniowania, gdy powstanie API).
+  ```typescript
+  export interface Collection {
+    id: number;
+    name: string;
+    flashcard_count?: number;
+  }
+  ```
+- **`ApiFilters`**: Obiekt przechowujący stan filtrów do zapytania API.
+  ```typescript
+  export interface ApiFilters {
+    page: number;
+    limit: number;
+    search: string;
+    collectionId: number | null;
+  }
+  ```
 
 ## 6. Zarządzanie stanem
 
 Logika biznesowa i stan widoku zostaną wyodrębnione do customowego hooka `useFlashcards`, co zapewni separację logiki od prezentacji.
 
--   **`useFlashcards()`**:
-    -   **Zarządzany stan:** `flashcards`, `collections`, `pagination`, `filters`, `isLoading`, `error`, `dialogState`.
-    -   **Odpowiedzialność:** Pobieranie danych, obsługa akcji użytkownika (CRUD), zarządzanie stanem ładowania i błędów, kontrolowanie otwierania i zamykania modali.
-    -   **Zwracane wartości:** Obiekt ze stanem (`state`) oraz obiekt z akcjami (`actions`), które komponenty mogą wywoływać.
+- **`useFlashcards()`**:
+  - **Zarządzany stan:** `flashcards`, `collections`, `pagination`, `filters`, `isLoading`, `error`, `dialogState`.
+  - **Odpowiedzialność:** Pobieranie danych, obsługa akcji użytkownika (CRUD), zarządzanie stanem ładowania i błędów, kontrolowanie otwierania i zamykania modali.
+  - **Zwracane wartości:** Obiekt ze stanem (`state`) oraz obiekt z akcjami (`actions`), które komponenty mogą wywoływać.
 
 ## 7. Integracja API
 
 Komponenty będą komunikować się z API `/api/flashcards` za pośrednictwem akcji w hooku `useFlashcards`.
 
--   **`GET /api/flashcards`**:
-    -   **Użycie:** Pobieranie listy fiszek przy ładowaniu widoku i przy każdej zmianie filtrów.
-    -   **Typ odpowiedzi:** `FlashcardsListResponseDto`
--   **`POST /api/flashcards`**:
-    -   **Użycie:** Tworzenie nowej fiszki z `FlashcardFormDialog`.
-    -   **Typ żądania:** `FlashcardsCreateCommand`
-    -   **Typ odpowiedzi:** `FlashcardsCreateResponseDto`
--   **`PUT /api/flashcards/:id`**:
-    -   **Użycie:** Aktualizacja istniejącej fiszki z `FlashcardFormDialog`.
-    -   **Typ żądania:** `FlashcardUpdateDto`
-    -   **Typ odpowiedzi:** `FlashcardUpdateResponseDto`
--   **`DELETE /api/flashcards/:id`**:
-    -   **Użycie:** Usuwanie fiszki po potwierdzeniu w `DeleteConfirmationDialog`.
-    -   **Typ odpowiedzi:** `204 No Content`
+- **`GET /api/flashcards`**:
+  - **Użycie:** Pobieranie listy fiszek przy ładowaniu widoku i przy każdej zmianie filtrów.
+  - **Typ odpowiedzi:** `FlashcardsListResponseDto`
+- **`POST /api/flashcards`**:
+  - **Użycie:** Tworzenie nowej fiszki z `FlashcardFormDialog`.
+  - **Typ żądania:** `FlashcardsCreateCommand`
+  - **Typ odpowiedzi:** `FlashcardsCreateResponseDto`
+- **`PUT /api/flashcards/:id`**:
+  - **Użycie:** Aktualizacja istniejącej fiszki z `FlashcardFormDialog`.
+  - **Typ żądania:** `FlashcardUpdateDto`
+  - **Typ odpowiedzi:** `FlashcardUpdateResponseDto`
+- **`DELETE /api/flashcards/:id`**:
+  - **Użycie:** Usuwanie fiszki po potwierdzeniu w `DeleteConfirmationDialog`.
+  - **Typ odpowiedzi:** `204 No Content`
 
 ## 8. Interakcje użytkownika
 
--   **Dodawanie fiszki:** Kliknięcie "Dodaj fiszkę" -> otwarcie `FlashcardFormDialog` -> wypełnienie i zapis -> wywołanie `POST` -> zamknięcie modala i odświeżenie listy.
--   **Edycja fiszki:** Kliknięcie "Edytuj" w wierszu tabeli -> otwarcie `FlashcardFormDialog` z danymi -> edycja i zapis -> wywołanie `PUT` -> zamknięcie modala i aktualizacja wiersza na liście.
--   **Usuwanie fiszki:** Kliknięcie "Usuń" -> otwarcie `DeleteConfirmationDialog` -> potwierdzenie -> wywołanie `DELETE` -> zamknięcie modala i usunięcie wiersza z listy.
--   **Wyszukiwanie:** Wpisywanie tekstu w pole wyszukiwania -> wywołanie `GET` z parametrem `search` (z debouncingiem).
--   **Paginacja:** Kliknięcie na numer strony -> wywołanie `GET` z parametrem `page`.
+- **Dodawanie fiszki:** Kliknięcie "Dodaj fiszkę" -> otwarcie `FlashcardFormDialog` -> wypełnienie i zapis -> wywołanie `POST` -> zamknięcie modala i odświeżenie listy.
+- **Edycja fiszki:** Kliknięcie "Edytuj" w wierszu tabeli -> otwarcie `FlashcardFormDialog` z danymi -> edycja i zapis -> wywołanie `PUT` -> zamknięcie modala i aktualizacja wiersza na liście.
+- **Usuwanie fiszki:** Kliknięcie "Usuń" -> otwarcie `DeleteConfirmationDialog` -> potwierdzenie -> wywołanie `DELETE` -> zamknięcie modala i usunięcie wiersza z listy.
+- **Wyszukiwanie:** Wpisywanie tekstu w pole wyszukiwania -> wywołanie `GET` z parametrem `search` (z debouncingiem).
+- **Paginacja:** Kliknięcie na numer strony -> wywołanie `GET` z parametrem `page`.
 
 ## 9. Warunki i walidacja
 
 Walidacja po stronie klienta będzie realizowana w komponencie `FlashcardFormDialog` przy użyciu `react-hook-form` i `zod`, aby zapewnić natychmiastowy feedback dla użytkownika.
 
--   **Formularz fiszki:**
-    -   Pole `front`: Musi być wypełnione. Długość nie może przekraczać 200 znaków.
-    -   Pole `back`: Musi być wypełnione. Długość nie może przekraczać 500 znaków.
--   **Stan interfejsu:** Przycisk "Zapisz" w formularzu jest nieaktywny, dopóki wszystkie warunki walidacji nie zostaną spełnione. Komunikaty o błędach wyświetlane są pod odpowiednymi polami.
+- **Formularz fiszki:**
+  - Pole `front`: Musi być wypełnione. Długość nie może przekraczać 200 znaków.
+  - Pole `back`: Musi być wypełnione. Długość nie może przekraczać 500 znaków.
+- **Stan interfejsu:** Przycisk "Zapisz" w formularzu jest nieaktywny, dopóki wszystkie warunki walidacji nie zostaną spełnione. Komunikaty o błędach wyświetlane są pod odpowiednymi polami.
 
 ## 10. Obsługa błędów
 
--   **Błąd pobierania danych (np. 500):** Widok wyświetli komunikat o błędzie zamiast tabeli z fiszkami, z opcją ponowienia próby.
--   **Błąd walidacji z API (400):** Formularz w modalu pozostanie otwarty, a błędy zwrócone z API zostaną wyświetlone przy odpowiednich polach.
--   **Błąd zapisu/usunięcia (404, 500):** Użytkownik zobaczy powiadomienie typu "toast" z informacją o niepowodzeniu operacji. Stan `isDeleting` zostanie zresetowany.
--   **Brak autoryzacji (401):** Globalna obsługa błędów w kliencie API powinna przechwycić ten status i przekierować użytkownika na stronę logowania.
+- **Błąd pobierania danych (np. 500):** Widok wyświetli komunikat o błędzie zamiast tabeli z fiszkami, z opcją ponowienia próby.
+- **Błąd walidacji z API (400):** Formularz w modalu pozostanie otwarty, a błędy zwrócone z API zostaną wyświetlone przy odpowiednich polach.
+- **Błąd zapisu/usunięcia (404, 500):** Użytkownik zobaczy powiadomienie typu "toast" z informacją o niepowodzeniu operacji. Stan `isDeleting` zostanie zresetowany.
+- **Brak autoryzacji (401):** Globalna obsługa błędów w kliencie API powinna przechwycić ten status i przekierować użytkownika na stronę logowania.
 
 ## 11. Kroki implementacji
 
@@ -164,4 +172,4 @@ Walidacja po stronie klienta będzie realizowana w komponencie `FlashcardFormDia
 9.  **Filtrowanie i wyszukiwanie:** Dodanie `FlashcardsHeader` z polem do wyszukiwania i podłączenie go do stanu filtrów w hooku (z debouncingiem).
 10. **Komponent `EmptyState`:** Implementacja widoku dla przypadku, gdy nie ma żadnych fiszek.
 11. **Komponent `CollectionsManager`:** Implementacja komponentu do zarządzania kolekcjami (może być początkowo placeholderem, jeśli API nie jest gotowe).
-12. **Styling i finalne poprawki:** Dopracowanie wyglądu za pomocą Tailwind i Shadcn/ui, zapewnienie responsywności i dostępności. 
+12. **Styling i finalne poprawki:** Dopracowanie wyglądu za pomocą Tailwind i Shadcn/ui, zapewnienie responsywności i dostępności.

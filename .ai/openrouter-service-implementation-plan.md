@@ -13,17 +13,17 @@ Konstruktor klasy `OpenRouterService` nie będzie przyjmował żadnych argument�
 ```typescript
 // Lokalizacja: src/lib/openrouter/index.ts
 
-import { OPENROUTER_API_KEY } from '$env/static/private';
+import { OPENROUTER_API_KEY } from "$env/static/private";
 
 export class OpenRouterService {
   private readonly apiKey: string;
-  private readonly baseUrl = 'https://openrouter.ai/api/v1';
+  private readonly baseUrl = "https://openrouter.ai/api/v1";
 
   constructor() {
     if (!OPENROUTER_API_KEY) {
       // Ten błąd zostanie rzucony podczas inicjalizacji serwera,
       // jeśli zmienna środowiskowa nie jest ustawiona.
-      throw new Error('OPENROUTER_API_KEY is not set in environment variables.');
+      throw new Error("OPENROUTER_API_KEY is not set in environment variables.");
     }
     this.apiKey = OPENROUTER_API_KEY;
   }
@@ -125,7 +125,7 @@ Zdefiniuj interfejsy dla wiadomości, opcji i odpowiedzi. Zaleca się użycie Zo
 
 // Podstawowa struktura wiadomości w konwersacji
 export interface Message {
-  role: 'system' | 'user' | 'assistant';
+  role: "system" | "user" | "assistant";
   content: string;
 }
 
@@ -173,7 +173,10 @@ export class OpenRouterError extends Error {
 export class OpenRouterAuthenticationError extends OpenRouterError {}
 export class OpenRouterRateLimitError extends OpenRouterError {}
 export class OpenRouterInvalidRequestError extends OpenRouterError {
-  constructor(message: string, public details?: any) {
+  constructor(
+    message: string,
+    public details?: any
+  ) {
     super(message);
   }
 }
@@ -189,7 +192,7 @@ Zaimplementuj logikę `OpenRouterService`, włączając w to metody publiczne i 
 ```typescript
 // src/lib/openrouter/index.ts
 
-import { OPENROUTER_API_KEY } from '$env/static/private';
+import { OPENROUTER_API_KEY } from "$env/static/private";
 import {
   OpenRouterAuthenticationError,
   OpenRouterInvalidRequestError,
@@ -197,21 +200,16 @@ import {
   OpenRouterServerError,
   JSONParsingError,
   NetworkError,
-} from './errors';
-import type {
-  CompletionOptions,
-  Message,
-  OpenRouterResponse,
-  StructuredCompletionOptions,
-} from './types';
+} from "./errors";
+import type { CompletionOptions, Message, OpenRouterResponse, StructuredCompletionOptions } from "./types";
 
 export class OpenRouterService {
   private readonly apiKey: string;
-  private readonly baseUrl = 'https://openrouter.ai/api/v1';
+  private readonly baseUrl = "https://openrouter.ai/api/v1";
 
   constructor() {
     if (!OPENROUTER_API_KEY) {
-      throw new Error('OPENROUTER_API_KEY is not set in environment variables.');
+      throw new Error("OPENROUTER_API_KEY is not set in environment variables.");
     }
     this.apiKey = OPENROUTER_API_KEY;
   }
@@ -230,14 +228,14 @@ export class OpenRouterService {
     try {
       return JSON.parse(content) as T;
     } catch (error) {
-      throw new JSONParsingError('Failed to parse model response as JSON.');
+      throw new JSONParsingError("Failed to parse model response as JSON.");
     }
   }
 
   #buildPayload(options: CompletionOptions | StructuredCompletionOptions): object {
     const messages: Message[] = [...options.messages];
     if (options.systemPrompt) {
-      messages.unshift({ role: 'system', content: options.systemPrompt });
+      messages.unshift({ role: "system", content: options.systemPrompt });
     }
 
     const payload: any = {
@@ -247,20 +245,21 @@ export class OpenRouterService {
       max_tokens: options.maxTokens,
     };
 
-    if ('schema' in options) {
+    if ("schema" in options) {
       payload.response_format = {
-        type: 'json_schema',
+        type: "json_schema",
         json_schema: {
           name: options.schemaName,
           strict: true,
           schema: options.schema,
         },
       };
-      
+
       // Dodaj instrukcję dla modelu, aby użył schematu
-      const lastUserMessageIndex = messages.findLastIndex(m => m.role === 'user');
-      if(lastUserMessageIndex > -1) {
-        messages[lastUserMessageIndex].content += `\n\nProszę, odpowiedz, używając narzędzia JSON o nazwie "${options.schemaName}".`;
+      const lastUserMessageIndex = messages.findLastIndex((m) => m.role === "user");
+      if (lastUserMessageIndex > -1) {
+        messages[lastUserMessageIndex].content +=
+          `\n\nProszę, odpowiedz, używając narzędzia JSON o nazwie "${options.schemaName}".`;
       }
     }
 
@@ -270,10 +269,10 @@ export class OpenRouterService {
   async #request<T>(payload: object): Promise<T> {
     try {
       const response = await fetch(`${this.baseUrl}/chat/completions`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${this.apiKey}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.apiKey}`,
         },
         body: JSON.stringify(payload),
       });
@@ -287,7 +286,7 @@ export class OpenRouterService {
       return data as T;
     } catch (error) {
       if (error instanceof OpenRouterError) throw error;
-      throw new NetworkError('A network error occurred while communicating with OpenRouter.');
+      throw new NetworkError("A network error occurred while communicating with OpenRouter.");
     }
   }
 
@@ -314,40 +313,45 @@ Utwórz endpoint API, aby zademonstrować użycie usługi.
 
 ```typescript
 // src/pages/api/chat.ts
-import type { APIRoute } from 'astro';
-import { OpenRouterService } from '@lib/openrouter';
-import { OpenRouterInvalidRequestError } from '@lib/openrouter/errors';
+import type { APIRoute } from "astro";
+import { OpenRouterService } from "@lib/openrouter";
+import { OpenRouterInvalidRequestError } from "@lib/openrouter/errors";
 
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    
+
     // Prosta walidacja wejścia
-    if (!body.message || typeof body.message !== 'string') {
-      return new Response(JSON.stringify({ error: 'Message is required' }), { status: 400 });
+    if (!body.message || typeof body.message !== "string") {
+      return new Response(JSON.stringify({ error: "Message is required" }), { status: 400 });
     }
 
     const openrouter = new OpenRouterService();
 
     // Przykład dla getStructuredCompletion
     const userDetails = await openrouter.getStructuredCompletion<{ name: string; email: string }>({
-      messages: [{ role: 'user', content: `Nazywam się Jan Kowalski, a mój email to jan.kowalski@example.com. Wyodrębnij te informacje. Użyj polskiego imienia i nazwiska. ${body.message}` }],
-      model: 'anthropic/claude-3-haiku-20240307',
-      systemPrompt: 'Jesteś asystentem, który wyodrębnia dane i zwraca je w formacie JSON.',
-      schemaName: 'extract_user_details',
-      schema: {
-        type: 'object',
-        properties: {
-          name: { type: 'string', description: 'Imię i nazwisko użytkownika.' },
-          email: { type: 'string', format: 'email', description: 'Adres email użytkownika.' },
+      messages: [
+        {
+          role: "user",
+          content: `Nazywam się Jan Kowalski, a mój email to jan.kowalski@example.com. Wyodrębnij te informacje. Użyj polskiego imienia i nazwiska. ${body.message}`,
         },
-        required: ['name', 'email'],
+      ],
+      model: "anthropic/claude-3-haiku-20240307",
+      systemPrompt: "Jesteś asystentem, który wyodrębnia dane i zwraca je w formacie JSON.",
+      schemaName: "extract_user_details",
+      schema: {
+        type: "object",
+        properties: {
+          name: { type: "string", description: "Imię i nazwisko użytkownika." },
+          email: { type: "string", format: "email", description: "Adres email użytkownika." },
+        },
+        required: ["name", "email"],
       },
     });
 
     return new Response(JSON.stringify(userDetails), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { "Content-Type": "application/json" },
     });
   } catch (error: any) {
     console.error(error);

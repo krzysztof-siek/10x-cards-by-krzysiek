@@ -1,41 +1,11 @@
 import React from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { toast } from "sonner";
-
-const resetPasswordSchema = z.object({
-  email: z.string().email("Nieprawidłowy format adresu email"),
-});
-
-type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
+import { useResetPasswordForm } from "@/hooks/auth/useResetPasswordForm";
 
 export function ResetPasswordForm() {
-  const form = useForm<ResetPasswordFormValues>({
-    resolver: zodResolver(resetPasswordSchema),
-    defaultValues: {
-      email: "",
-    },
-  });
-
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [isSubmitted, setIsSubmitted] = React.useState(false);
-
-  const onSubmit = async () => {
-    setIsLoading(true);
-    try {
-      // This is just a placeholder for future backend implementation
-      setIsSubmitted(true);
-      toast.success("Link do resetowania hasła został wysłany");
-    } catch {
-      toast.error("Błąd podczas wysyłania linku resetującego");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { form, isLoading, isSubmitted, onSubmit } = useResetPasswordForm();
 
   if (isSubmitted) {
     return (
@@ -55,7 +25,7 @@ export function ResetPasswordForm() {
   return (
     <div className="w-full max-w-md mx-auto">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={onSubmit} className="space-y-6">
           <div className="space-y-2 text-center">
             <h2 className="text-xl font-semibold">Resetowanie hasła</h2>
             <p className="text-muted-foreground">Podaj swój adres email, a wyślemy Ci link do resetowania hasła.</p>

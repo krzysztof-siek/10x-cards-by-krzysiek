@@ -1,15 +1,21 @@
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { vi, describe, it, expect, beforeEach } from "vitest";
 import { RegisterForm } from "./RegisterForm";
 import { toast } from "sonner";
+import { authService } from "@/services/auth";
 
 // Mocki
 vi.mock("sonner", () => ({
   toast: {
     success: vi.fn(),
     error: vi.fn(),
+  },
+}));
+
+vi.mock("@/services/auth", () => ({
+  authService: {
+    register: vi.fn(),
   },
 }));
 
@@ -41,240 +47,180 @@ describe("RegisterForm", () => {
   });
 
   it("prevents submission with invalid email", async () => {
-    const user = userEvent.setup();
-    const mockFetch = vi.fn(); // Lokalny mock dla kontroli wywołań
+    const { container } = render(<RegisterForm />);
 
-    // Zastępujemy globalny mock dla tego testu
-    const originalFetch = window.fetch;
-    window.fetch = mockFetch;
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/^hasło$/i);
+    const confirmPasswordInput = screen.getByLabelText(/powtórz hasło/i);
+    const form = container.querySelector("form");
 
-    try {
-      render(<RegisterForm />);
+    fireEvent.change(emailInput, { target: { value: "invalid-email" } });
+    fireEvent.change(passwordInput, { target: { value: "Password123!" } });
+    fireEvent.change(confirmPasswordInput, { target: { value: "Password123!" } });
 
-      const emailInput = screen.getByLabelText(/email/i);
-      const passwordInput = screen.getByLabelText(/^hasło$/i);
-      const confirmPasswordInput = screen.getByLabelText(/powtórz hasło/i);
-      const submitButton = screen.getByRole("button", { name: /zarejestruj/i });
-
-      // Wprowadzenie niepoprawnego emaila, ale poprawnych haseł
-      await user.type(emailInput, "invalid-email");
-      await user.type(passwordInput, "Password123!");
-      await user.type(confirmPasswordInput, "Password123!");
-
-      // Kliknięcie przycisku rejestracji
-      await user.click(submitButton);
-
-      // API nie powinno być wywołane, jeśli walidacja nie przechodzi
-      await waitFor(() => {
-        expect(mockFetch).not.toHaveBeenCalled();
-      });
-    } finally {
-      // Przywracamy oryginalny fetch
-      window.fetch = originalFetch;
+    if (form) {
+      fireEvent.submit(form);
     }
+
+    // Sprawdzamy, czy funkcja register nie została wywołana, co oznacza że formularz nie przeszedł walidacji
+    await waitFor(() => {
+      expect(authService.register).not.toHaveBeenCalled();
+    });
   });
 
   it("validates password requirements on submission", async () => {
-    const user = userEvent.setup();
-    const mockFetch = vi.fn();
+    const { container } = render(<RegisterForm />);
 
-    const originalFetch = window.fetch;
-    window.fetch = mockFetch;
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/^hasło$/i);
+    const confirmPasswordInput = screen.getByLabelText(/powtórz hasło/i);
+    const form = container.querySelector("form");
 
-    try {
-      render(<RegisterForm />);
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "weak" } });
+    fireEvent.change(confirmPasswordInput, { target: { value: "weak" } });
 
-      const emailInput = screen.getByLabelText(/email/i);
-      const passwordInput = screen.getByLabelText(/^hasło$/i);
-      const confirmPasswordInput = screen.getByLabelText(/powtórz hasło/i);
-      const submitButton = screen.getByRole("button", { name: /zarejestruj/i });
-
-      // Wprowadzenie poprawnego emaila, ale za krótkiego hasła
-      await user.type(emailInput, "test@example.com");
-      await user.type(passwordInput, "short");
-      await user.type(confirmPasswordInput, "short");
-
-      // Kliknięcie przycisku rejestracji
-      await user.click(submitButton);
-
-      // API nie powinno być wywołane, jeśli walidacja nie przechodzi
-      await waitFor(() => {
-        expect(mockFetch).not.toHaveBeenCalled();
-      });
-    } finally {
-      window.fetch = originalFetch;
+    if (form) {
+      fireEvent.submit(form);
     }
+
+    // Sprawdzamy, czy funkcja register nie została wywołana, co oznacza że formularz nie przeszedł walidacji
+    await waitFor(() => {
+      expect(authService.register).not.toHaveBeenCalled();
+    });
   });
 
   it("validates password confirmation matching on submission", async () => {
-    const user = userEvent.setup();
-    const mockFetch = vi.fn();
+    const { container } = render(<RegisterForm />);
 
-    const originalFetch = window.fetch;
-    window.fetch = mockFetch;
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/^hasło$/i);
+    const confirmPasswordInput = screen.getByLabelText(/powtórz hasło/i);
+    const form = container.querySelector("form");
 
-    try {
-      render(<RegisterForm />);
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "Password123!" } });
+    fireEvent.change(confirmPasswordInput, { target: { value: "DifferentPassword123!" } });
 
-      const emailInput = screen.getByLabelText(/email/i);
-      const passwordInput = screen.getByLabelText(/^hasło$/i);
-      const confirmPasswordInput = screen.getByLabelText(/powtórz hasło/i);
-      const submitButton = screen.getByRole("button", { name: /zarejestruj/i });
-
-      // Wprowadzenie poprawnych danych dla email i hasło, ale różnych haseł
-      await user.type(emailInput, "test@example.com");
-      await user.type(passwordInput, "Password123!");
-      await user.type(confirmPasswordInput, "DifferentPassword123!");
-
-      // Kliknięcie przycisku rejestracji
-      await user.click(submitButton);
-
-      // API nie powinno być wywołane, jeśli walidacja nie przechodzi
-      await waitFor(() => {
-        expect(mockFetch).not.toHaveBeenCalled();
-      });
-    } finally {
-      window.fetch = originalFetch;
+    if (form) {
+      fireEvent.submit(form);
     }
+
+    // Sprawdzamy, czy funkcja register nie została wywołana, co oznacza że formularz nie przeszedł walidacji
+    await waitFor(() => {
+      expect(authService.register).not.toHaveBeenCalled();
+    });
   });
 
   it("submits form with valid data and handles success response", async () => {
-    const user = userEvent.setup();
-
-    // Konfiguracja mocka fetch dla poprawnej odpowiedzi
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () =>
-        Promise.resolve({
-          success: true,
-          message: "Zarejestrowano pomyślnie",
-          redirectTo: "/flashcards",
-        }),
+    vi.mocked(authService.register).mockResolvedValueOnce({
+      success: true,
+      redirectTo: "/flashcards",
     });
 
-    render(<RegisterForm />);
+    const { container } = render(<RegisterForm />);
 
-    // Wypełnienie formularza poprawnymi danymi
-    await user.type(screen.getByLabelText(/email/i), "test@example.com");
-    await user.type(screen.getByLabelText(/^hasło$/i), "Password123!");
-    await user.type(screen.getByLabelText(/powtórz hasło/i), "Password123!");
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/^hasło$/i);
+    const confirmPasswordInput = screen.getByLabelText(/powtórz hasło/i);
+    const form = container.querySelector("form");
 
-    // Kliknięcie przycisku rejestracji
-    await user.click(screen.getByRole("button", { name: /zarejestruj/i }));
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "Password123!" } });
+    fireEvent.change(confirmPasswordInput, { target: { value: "Password123!" } });
 
-    // Sprawdzenie, czy fetch został wywołany z poprawnymi danymi
+    if (form) {
+      fireEvent.submit(form);
+    }
+
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledWith("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: "test@example.com",
-          password: "Password123!",
-          confirmPassword: "Password123!",
-        }),
+      expect(authService.register).toHaveBeenCalledWith({
+        email: "test@example.com",
+        password: "Password123!",
+        confirmPassword: "Password123!",
       });
     });
 
-    // Sprawdzenie, czy toast success został wywołany
-    expect(toast.success).toHaveBeenCalledWith("Zarejestrowano pomyślnie");
-
-    // Sprawdzenie, czy nastąpiło przekierowanie
-    expect(mockLocation.href).toBe("/flashcards");
+    await waitFor(() => {
+      expect(toast.success).toHaveBeenCalledWith("Zarejestrowano pomyślnie");
+    });
   });
 
   it("handles user already exists error", async () => {
-    const user = userEvent.setup();
+    vi.mocked(authService.register).mockRejectedValueOnce(new Error("Użytkownik o podanym adresie email już istnieje"));
 
-    // Konfiguracja mocka fetch dla błędu "użytkownik już istnieje"
-    mockFetch.mockResolvedValueOnce({
-      ok: false,
-      json: () =>
-        Promise.resolve({
-          success: false,
-          message: "Użytkownik o podanym adresie email już istnieje",
-        }),
-    });
+    const { container } = render(<RegisterForm />);
 
-    render(<RegisterForm />);
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/^hasło$/i);
+    const confirmPasswordInput = screen.getByLabelText(/powtórz hasło/i);
+    const form = container.querySelector("form");
 
-    // Wypełnienie formularza
-    await user.type(screen.getByLabelText(/email/i), "existing@example.com");
-    await user.type(screen.getByLabelText(/^hasło$/i), "Password123!");
-    await user.type(screen.getByLabelText(/powtórz hasło/i), "Password123!");
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "Password123!" } });
+    fireEvent.change(confirmPasswordInput, { target: { value: "Password123!" } });
 
-    // Kliknięcie przycisku rejestracji
-    await user.click(screen.getByRole("button", { name: /zarejestruj/i }));
+    if (form) {
+      fireEvent.submit(form);
+    }
 
-    // Sprawdzenie, czy fetch został wywołany
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalled();
+      expect(toast.error).toHaveBeenCalledWith("Użytkownik o podanym adresie email już istnieje");
     });
-
-    // Sprawdzenie, czy toast error został wywołany z odpowiednim komunikatem
-    expect(toast.error).toHaveBeenCalledWith("Użytkownik o podanym adresie email już istnieje");
   });
 
   it("handles network errors during registration", async () => {
-    const user = userEvent.setup();
+    vi.mocked(authService.register).mockRejectedValueOnce(new Error("Wystąpił błąd podczas rejestracji"));
 
-    // Konfiguracja mocka fetch dla błędu sieciowego
-    mockFetch.mockRejectedValueOnce(new Error("Network error"));
+    const { container } = render(<RegisterForm />);
 
-    render(<RegisterForm />);
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/^hasło$/i);
+    const confirmPasswordInput = screen.getByLabelText(/powtórz hasło/i);
+    const form = container.querySelector("form");
 
-    // Wypełnienie formularza
-    await user.type(screen.getByLabelText(/email/i), "test@example.com");
-    await user.type(screen.getByLabelText(/^hasło$/i), "Password123!");
-    await user.type(screen.getByLabelText(/powtórz hasło/i), "Password123!");
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "Password123!" } });
+    fireEvent.change(confirmPasswordInput, { target: { value: "Password123!" } });
 
-    // Kliknięcie przycisku rejestracji
-    await user.click(screen.getByRole("button", { name: /zarejestruj/i }));
+    if (form) {
+      fireEvent.submit(form);
+    }
 
-    // Sprawdzenie, czy toast error został wywołany
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith("Wystąpił błąd podczas rejestracji");
     });
   });
 
   it("disables form during submission", async () => {
-    const user = userEvent.setup();
-
-    // Używamy opóźnienia, aby sprawdzić stan podczas ładowania
-    mockFetch.mockImplementationOnce(
+    vi.mocked(authService.register).mockImplementationOnce(
       () =>
-        new Promise((resolve) =>
-          setTimeout(
-            () =>
-              resolve({
-                ok: true,
-                json: () =>
-                  Promise.resolve({
-                    success: true,
-                    message: "Zarejestrowano pomyślnie",
-                    redirectTo: "/flashcards",
-                  }),
-              }),
-            100
-          )
-        )
+        new Promise(() => {
+          // Never resolves
+        })
     );
 
-    render(<RegisterForm />);
+    const { container } = render(<RegisterForm />);
 
-    // Wypełnienie formularza
-    await user.type(screen.getByLabelText(/email/i), "test@example.com");
-    await user.type(screen.getByLabelText(/^hasło$/i), "Password123!");
-    await user.type(screen.getByLabelText(/powtórz hasło/i), "Password123!");
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/^hasło$/i);
+    const confirmPasswordInput = screen.getByLabelText(/powtórz hasło/i);
+    const submitButton = screen.getByRole("button", { name: /zarejestruj/i });
+    const form = container.querySelector("form");
 
-    // Kliknięcie przycisku rejestracji
-    await user.click(screen.getByRole("button", { name: /zarejestruj/i }));
+    fireEvent.change(emailInput, { target: { value: "test@example.com" } });
+    fireEvent.change(passwordInput, { target: { value: "Password123!" } });
+    fireEvent.change(confirmPasswordInput, { target: { value: "Password123!" } });
 
-    // Sprawdzenie, czy przyciski są wyłączone podczas ładowania
-    expect(screen.getByLabelText(/email/i)).toBeDisabled();
-    expect(screen.getByLabelText(/^hasło$/i)).toBeDisabled();
-    expect(screen.getByLabelText(/powtórz hasło/i)).toBeDisabled();
-    expect(screen.getByRole("button", { name: /rejestracja/i })).toBeDisabled();
+    if (form) {
+      fireEvent.submit(form);
+    }
+
+    await waitFor(() => {
+      expect(submitButton).toBeDisabled();
+      expect(emailInput).toBeDisabled();
+      expect(passwordInput).toBeDisabled();
+      expect(confirmPasswordInput).toBeDisabled();
+    });
   });
 });

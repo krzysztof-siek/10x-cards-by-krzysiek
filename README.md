@@ -57,11 +57,13 @@
 ### Running Locally
 
 Start the development server:
+
 ```bash
 npm run dev
 ```
 
 To build for production and preview:
+
 ```bash
 npm run build
 npm run preview

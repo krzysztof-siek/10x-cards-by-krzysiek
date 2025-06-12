@@ -5,6 +5,7 @@
 Architektura interfejsu użytkownika (UI) dla aplikacji 10x-cards została zaprojektowana w celu zapewnienia płynnego i intuicyjnego doświadczenia, koncentrując się na kluczowych przepływach pracy zdefiniowanych w dokumentacji produktu (PRD) i notatkach z sesji planowania. Architektura opiera się na frameworku Astro, wykorzystując interaktywne "wyspy" React do dynamicznych komponentów. Takie podejście łączy zalety wydajności statycznie generowanych stron (Astro) z bogatą interaktywnością React tam, gdzie jest to potrzebne.
 
 Główne filary architektury to:
+
 - **Uwierzytelnianie:** Pełny, bezpieczny przepływ uwierzytelniania, w tym rejestracja, logowanie i odzyskiwanie hasła.
 - **Generowanie fiszek (AI):** Centralna funkcja aplikacji, umożliwiająca użytkownikom generowanie propozycji fiszek z tekstu, a następnie ich przeglądanie i zapisywanie.
 - **Zarządzanie fiszkami:** Pełna funkcjonalność CRUD (Tworzenie, Odczyt, Aktualizacja, Usuwanie) dla fiszek i kolekcji, w których są one zorganizowane.
@@ -20,6 +21,7 @@ Poniżej przedstawiono listę wszystkich niezbędnych widoków (stron) w aplikac
 ---
 
 ### **Nazwa widoku:** Strona logowania
+
 - **Ścieżka:** `/login`
 - **Główny cel:** Umożliwienie zarejestrowanym użytkownikom bezpiecznego dostępu do ich konta.
 - **Kluczowe informacje do wyświetlenia:** Formularz z polami na e-mail i hasło.
@@ -34,6 +36,7 @@ Poniżej przedstawiono listę wszystkich niezbędnych widoków (stron) w aplikac
 ---
 
 ### **Nazwa widoku:** Strona rejestracji
+
 - **Ścieżka:** `/register`
 - **Główny cel:** Umożliwienie nowym użytkownikom stworzenia konta w serwisie.
 - **Kluczowe informacje do wyświetlenia:** Formularz z polami na e-mail, hasło i potwierdzenie hasła.
@@ -48,6 +51,7 @@ Poniżej przedstawiono listę wszystkich niezbędnych widoków (stron) w aplikac
 ---
 
 ### **Nazwa widoku:** Odzyskiwanie hasła
+
 - **Ścieżka:** `/forgot-password`
 - **Główny cel:** Inicjacja procesu resetowania hasła przez użytkownika.
 - **Kluczowe informacje do wyświetlenia:** Formularz z polem na adres e-mail.
@@ -61,6 +65,7 @@ Poniżej przedstawiono listę wszystkich niezbędnych widoków (stron) w aplikac
 ---
 
 ### **Nazwa widoku:** Aktualizacja hasła
+
 - **Ścieżka:** `/update-password`
 - **Główny cel:** Umożliwienie użytkownikowi ustawienia nowego hasła po kliknięciu w link resetujący.
 - **Kluczowe informacje do wyświetlenia:** Formularz z polami na nowe hasło i jego potwierdzenie.
@@ -74,6 +79,7 @@ Poniżej przedstawiono listę wszystkich niezbędnych widoków (stron) w aplikac
 ---
 
 ### **Nazwa widoku:** Generowanie fiszek (AI)
+
 - **Ścieżka:** `/generate`
 - **Główny cel:** Główne narzędzie aplikacji, pozwalające na generowanie propozycji fiszek z dostarczonego tekstu.
 - **Kluczowe informacje do wyświetlenia:**
@@ -92,6 +98,7 @@ Poniżej przedstawiono listę wszystkich niezbędnych widoków (stron) w aplikac
 ---
 
 ### **Nazwa widoku:** Moje fiszki
+
 - **Ścieżka:** `/flashcards`
 - **Główny cel:** Zarządzanie wszystkimi zapisanymi fiszkami i kolekcjami użytkownika.
 - **Kluczowe informacje do wyświetlenia:**
@@ -112,6 +119,7 @@ Poniżej przedstawiono listę wszystkich niezbędnych widoków (stron) w aplikac
 ---
 
 ### **Nazwa widoku:** Historia generowania
+
 - **Ścieżka:** `/generations`
 - **Główny cel:** Umożliwienie użytkownikowi przeglądania historii zapytań do AI.
 - **Kluczowe informacje do wyświetlenia:** Tabela z historią generacji, zawierająca datę, fragment tekstu źródłowego, status (np. "Ukończono", "Błąd") oraz liczbę fiszek utworzonych z danej generacji.
@@ -126,6 +134,7 @@ Poniżej przedstawiono listę wszystkich niezbędnych widoków (stron) w aplikac
 ---
 
 ### **Nazwa widoku:** Ćwiczenie fiszek
+
 - **Ścieżka:** `/practice`
 - **Główny cel:** Umożliwienie użytkownikowi aktywnego ćwiczenia i weryfikacji wiedzy z zapisanych fiszek.
 - **Kluczowe informacje do wyświetlenia:**
@@ -184,4 +193,4 @@ Poniżej znajduje się lista kluczowych, reużywalnych komponentów, które stan
 - **`EmptyState.tsx`:** Komponent wyświetlany, gdy lista danych (np. fiszek, historii generowania) jest pusta. Zawiera czytelną informację oraz opcjonalny przycisk wzywający do akcji (np. "Stwórz swoją pierwszą fiszkę").
 - **`PageHeader.tsx`:** Standardowy komponent nagłówka strony, zawierający tytuł widoku oraz opcjonalne przyciski akcji (np. "Dodaj nową fiszkę" w widoku `/flashcards`).
 - **Formularze (np. `LoginForm`, `FlashcardForm`):** Zbudowane przy użyciu `react-hook-form` i `zod` do walidacji, co zapewnia spójne i niezawodne działanie formularzy w całej aplikacji.
-- **Tabele (np. `FlashcardsTable`, `GenerationsTable`):** Komponenty oparte na `tanstack/react-table` do wyświetlania danych tabelarycznych z wbudowaną obsługą paginacji, sortowania i filtrowania. 
+- **Tabele (np. `FlashcardsTable`, `GenerationsTable`):** Komponenty oparte na `tanstack/react-table` do wyświetlania danych tabelarycznych z wbudowaną obsługą paginacji, sortowania i filtrowania.
