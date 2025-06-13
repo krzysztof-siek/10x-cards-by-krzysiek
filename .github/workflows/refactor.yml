@@ -1,4 +1,4 @@
-name: Deploy to Cloudflare Pages a
+name: Deploy to Cloudflare Pages
 
 on:
   push:
