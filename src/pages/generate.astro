@@ -2,15 +2,23 @@
 import Layout from "../layouts/Layout.astro";
 import { GenerateFlashcardsView } from "../components/generate/GenerateFlashcardsView";
 import { Toaster } from "../components/ui/sonner";
+import { isFeatureEnabled } from "../features/featureFlags";
 
 // Mark this page as requiring server-side rendering for authentication
 export const prerender = false;
 
+// Sprawdź czy feature flag jest włączony
+const isGenerateEnabled = isFeatureEnabled("generate.view");
+
+// Przekieruj na stronę główną jeśli feature jest wyłączony
+if (!isGenerateEnabled) {
+  return Astro.redirect("/");
+}
+
 // Ensure page is protected for authenticated users only
-// This will be uncommented once authentication is implemented
-// if (!Astro.locals.user) {
-//   return Astro.redirect("/auth/login");
-// }
+if (!Astro.locals.user) {
+  return Astro.redirect("/auth/login");
+}
 ---
 
 <Layout title="Generate Flashcards - 10x Cards">

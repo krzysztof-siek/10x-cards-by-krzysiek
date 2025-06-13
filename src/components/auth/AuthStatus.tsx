@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import type { AuthResponseDTO } from "@/types";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { tryIsFeatureEnabled } from "@/features/featureFlags";
 
 interface AuthStatusProps {
   user?: {
@@ -11,6 +12,9 @@ interface AuthStatusProps {
 }
 
 export function AuthStatus({ user }: AuthStatusProps) {
+  const isLoginEnabled = tryIsFeatureEnabled("auth.login");
+  const isRegisterEnabled = tryIsFeatureEnabled("auth.register");
+
   // Handle logout
   const handleLogout = async () => {
     try {
@@ -41,14 +45,19 @@ export function AuthStatus({ user }: AuthStatusProps) {
   };
 
   if (!user) {
+    if (!isLoginEnabled) {
+      return null;
+    }
     return (
       <div className="flex gap-2">
         <Button variant="ghost" asChild>
           <a href="/auth/login">Zaloguj się</a>
         </Button>
-        <Button asChild>
-          <a href="/auth/register">Zarejestruj się</a>
-        </Button>
+        {isRegisterEnabled && (
+          <Button asChild>
+            <a href="/auth/register">Zarejestruj się</a>
+          </Button>
+        )}
       </div>
     );
   }

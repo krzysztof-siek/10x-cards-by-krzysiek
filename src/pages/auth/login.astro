@@ -2,9 +2,18 @@
 import Layout from "../../layouts/Layout.astro";
 import { LoginForm } from "../../components/auth/LoginForm";
 import { Toaster } from "../../components/ui/sonner";
+import { isFeatureEnabled } from "../../features/featureFlags";
 
 // Mark this page as requiring server-side rendering
 export const prerender = false;
+
+// Sprawdź czy feature flag jest włączony
+const isLoginEnabled = isFeatureEnabled("auth.login");
+
+// Przekieruj na stronę główną jeśli feature jest wyłączony
+if (!isLoginEnabled) {
+  return Astro.redirect("/");
+}
 
 // Przekierowanie zalogowanych użytkowników do strony z fiszkami
 if (Astro.locals.user) {

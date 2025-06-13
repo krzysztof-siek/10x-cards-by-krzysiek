@@ -1,6 +1,15 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import PracticeView from "../components/views/practice/PracticeView";
+import { isFeatureEnabled } from "../features/featureFlags";
+
+// Sprawdź czy feature flag jest włączony
+const isPracticeEnabled = isFeatureEnabled("practice.view");
+
+// Przekieruj na stronę główną jeśli feature jest wyłączony
+if (!isPracticeEnabled) {
+  return Astro.redirect("/");
+}
 ---
 
 <Layout title="Ćwiczenie fiszek">

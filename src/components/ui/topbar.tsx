@@ -1,6 +1,6 @@
 import React from "react";
-import { Button } from "./button";
 import { AuthStatus } from "@/components/auth/AuthStatus";
+import { MainNav } from "@/components/navigation/MainNav";
 
 interface TopbarProps {
   user?: {
@@ -15,24 +15,8 @@ export function Topbar({ user }: TopbarProps) {
         <a href="/" className="text-xl font-bold hover:opacity-80 transition-opacity">
           10x-cards-by-Krzysiek
         </a>
-        <div className="flex items-center gap-2">
-          {user ? (
-            <>
-              <Button variant="ghost" asChild>
-                <a href="/generate">Generator</a>
-              </Button>
-              <Button variant="ghost" asChild>
-                <a href="/flashcards">Fiszki</a>
-              </Button>
-              <Button variant="ghost" asChild>
-                <a href="/practice">Ćwicz</a>
-              </Button>
-            </>
-          ) : (
-            <Button variant="ghost" asChild>
-              <a href="/">Strona główna</a>
-            </Button>
-          )}
+        <div className="flex items-center gap-4">
+          {user && <MainNav />}
           <AuthStatus user={user} />
         </div>
       </div>
