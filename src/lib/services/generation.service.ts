@@ -1,10 +1,17 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Generation, SuggestionDto } from "../../types";
-import crypto from "crypto";
 import { llmService } from "./llm.service";
 
 export class GenerationService {
   constructor(private supabase: SupabaseClient) {}
+
+  private async generateHash(text: string): Promise<string> {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+  }
 
   async createGeneration(params: {
     userId: string;
@@ -15,7 +22,7 @@ export class GenerationService {
   }): Promise<Generation> {
     const { userId, sourceText, suggestions, model, generationDurationMs } = params;
 
-    const sourceTextHash = crypto.createHash("sha256").update(sourceText).digest("hex");
+    const sourceTextHash = await this.generateHash(sourceText);
 
     const { data, error } = await this.supabase
       .from("generations")
@@ -54,7 +61,7 @@ export class GenerationService {
     // Tworzenie rekordu generacji w bazie danych
     if (result.error) {
       // Logowanie błędu, jeśli wystąpił
-      const sourceTextHash = crypto.createHash("sha256").update(sourceText).digest("hex");
+      const sourceTextHash = await this.generateHash(sourceText);
 
       await this.logGenerationError({
         userId,

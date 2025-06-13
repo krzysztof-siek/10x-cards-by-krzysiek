@@ -14,8 +14,11 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   adapter: cloudflare({
-    mode: "directory",
-    functionPerRoute: true,
+    mode: "advanced",
+    runtime: {
+      mode: "local",
+      type: "pages",
+    },
   }),
   experimental: { session: false },
 });
