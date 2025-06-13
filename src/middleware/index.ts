@@ -1,3 +1,4 @@
+import "../polyfills";
 import { defineMiddleware } from "astro:middleware";
 import { supabaseClient } from "../db/supabase.client";
 import { authService } from "../lib/services/auth.service";

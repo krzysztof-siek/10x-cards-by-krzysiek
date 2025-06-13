@@ -14,7 +14,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   adapter: cloudflare({
-    mode: "advanced",
+    mode: "directory",
     runtime: {
       mode: "local",
       type: "pages",
