@@ -17,5 +17,5 @@ export default defineConfig({
     mode: "directory",
     functionPerRoute: true,
   }),
-  experimental: { session: true },
+  experimental: { session: false },
 });
