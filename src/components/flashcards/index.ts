@@ -1,1 +1,2 @@
-export { FlashcardsView } from "./FlashcardsView";
+export * from "./FlashcardsView";
+export * from "./FlashcardsGrid";

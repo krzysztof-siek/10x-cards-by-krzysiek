@@ -1,13 +1,14 @@
 import { useFlashcards } from "./hooks/useFlashcards";
 import { FlashcardsHeader } from "./FlashcardsHeader";
-import { FlashcardsTable } from "./FlashcardsTable";
+import { FlashcardsGrid } from "./FlashcardsGrid";
 import { FlashcardFormDialog } from "./FlashcardFormDialog";
 import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog";
 import { EmptyState } from "./EmptyState";
 import { Button } from "@/components/ui/button";
-import { Loader2Icon } from "lucide-react";
+import { Loader2Icon, PlusIcon } from "lucide-react";
 import { toast } from "sonner";
 import type { FlashcardCreateDto, FlashcardUpdateDto } from "@/types";
+import { useEffect, useState } from "react";
 
 export function FlashcardsView() {
   const {
@@ -25,6 +26,26 @@ export function FlashcardsView() {
       closeDialog,
     },
   } = useFlashcards();
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Wykrywanie urządzenia mobilnego
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    // Sprawdź przy pierwszym renderowaniu
+    checkIfMobile();
+
+    // Nasłuchuj zmian rozmiaru okna
+    window.addEventListener("resize", checkIfMobile);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("resize", checkIfMobile);
+    };
+  }, []);
 
   if (error) {
     return (
@@ -92,7 +113,7 @@ export function FlashcardsView() {
       ) : (
         <>
           <div className="shadow-sm">
-            <FlashcardsTable flashcards={flashcards} onEdit={openEditDialog} onDelete={openDeleteDialog} />
+            <FlashcardsGrid flashcards={flashcards} onEdit={openEditDialog} onDelete={openDeleteDialog} />
           </div>
 
           {/* Load More Button */}
@@ -116,6 +137,20 @@ export function FlashcardsView() {
             Wyświetlanie {flashcards.length} z {pagination.total} fiszek
           </div>
         </>
+      )}
+
+      {/* Floating action button dla urządzeń mobilnych */}
+      {isMobile && (
+        <div className="fixed bottom-6 right-6 z-10">
+          <Button
+            onClick={openCreateDialog}
+            size="lg"
+            className="h-14 w-14 rounded-full shadow-lg"
+            aria-label="Dodaj nową fiszkę"
+          >
+            <PlusIcon className="h-6 w-6" />
+          </Button>
+        </div>
       )}
 
       {/* Dialogs */}

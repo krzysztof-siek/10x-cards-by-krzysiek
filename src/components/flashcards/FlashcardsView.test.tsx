@@ -61,6 +61,7 @@ const defaultMockActions = {
   openEditDialog: vi.fn(),
   openDeleteDialog: vi.fn(),
   closeDialog: vi.fn(),
+  handleSearchChange: vi.fn(),
 };
 
 describe("FlashcardsView", () => {
@@ -77,9 +78,10 @@ describe("FlashcardsView", () => {
 
     render(<FlashcardsView />);
 
-    // Check if flashcards are rendered
-    expect(screen.getByText("Test Question 1")).toBeInTheDocument();
-    expect(screen.getByText("Test Question 2")).toBeInTheDocument();
+    // Check if flashcards are rendered - używamy getAllByText zamiast getByText, ponieważ
+    // po zmianie komponentu na responsywny, tekst może pojawić się wielokrotnie (widok mobilny i desktop)
+    expect(screen.getAllByText("Test Question 1")[0]).toBeInTheDocument();
+    expect(screen.getAllByText("Test Question 2")[0]).toBeInTheDocument();
 
     // Verify the summary text is displayed
     expect(screen.getByText("Wyświetlanie 2 z 2 fiszek")).toBeInTheDocument();
