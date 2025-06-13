@@ -19,7 +19,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run Linter
         run: npm run lint
@@ -37,7 +37,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run Unit Tests
         run: npm run test
@@ -63,7 +63,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Install Wrangler
         run: npm install -g wrangler@3
