@@ -16,6 +16,5 @@ export default defineConfig({
   adapter: cloudflare({
     mode: "directory",
     functionPerRoute: true,
-  }),
-  experimental: { session: true },
+  })
 });
