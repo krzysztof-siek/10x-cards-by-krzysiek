@@ -16,6 +16,7 @@ export default defineConfig({
       alias: import.meta.env.PROD
         ? {
             "react-dom/server": "react-dom/server.edge",
+            "@supabase/supabase-js": "@supabase/supabase-js/dist/module",
           }
         : {},
     },
